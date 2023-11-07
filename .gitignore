@@ -1,6 +1,20 @@
-*.dSYM
-*_example
-.vscode
-.idea
+# Ignore build artifacts and executables
+build/
+*.o
 
+# Ignore dependency and package manager files
+.vscode/
+.idea/
+*.log
+*.so
+*.dylib
+
+# Ignore system and temporary files
+*.DS_Store
+*.dSYM
+
+# Ignore example files
+*_example
+
+# Ignore mypgp
 mypgp

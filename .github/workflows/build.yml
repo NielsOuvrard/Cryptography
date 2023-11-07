@@ -1,0 +1,33 @@
+name: Build and Test C++ Project
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v2
+
+    - name: Set up build environment
+      run: |
+        sudo apt-get -y install g++
+      shell: bash
+
+    - name: Build the project
+      run: |
+        make
+      working-directory: ${{ github.workspace }}
+
+    - name: Run Tests
+      run: |
+        cd build
+        ctest
+      working-directory: ${{ github.workspace }}
+
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results
+        path: build/Testing/Temporary/LastTest.log

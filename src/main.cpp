@@ -1,6 +1,7 @@
 #include "config.hpp"
 
-void print_usage () {
+void print_usage()
+{
     std::cout << "USAGE" << std::endl;
     std::cout << "  ./mypgp [-xor | -aes | -rsa] [-c | -d] [-b] KEY" << std::endl;
     std::cout << "  the MESSAGE is read from standard input" << std::endl;
@@ -15,7 +16,8 @@ void print_usage () {
     std::cout << "  -g P Q      for RSA only: generate a public and private key pair from the prime number P and Q" << std::endl;
 }
 
-int main (int argc, char* argv[]) {
+int main(int argc, char *argv[])
+{
     int option;
     bool xor_flag = false;
     bool aes_flag = false;
@@ -83,7 +85,8 @@ int main (int argc, char* argv[]) {
 
     if (optind < argc) {
         key = argv[optind];
-    } else {
+    }
+    else {
         std::cerr << "KEY is required. Use -h for help." << std::endl;
         exit(EXIT_FAILURE);
     }
