@@ -4,7 +4,7 @@
 
 SRC = *.cpp
 
-NAME = game_of_graphs
+NAME = mypgp
 
 # -Wall -Wextra -Werror
 
