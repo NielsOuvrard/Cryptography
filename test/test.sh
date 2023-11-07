@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Run your tests here
-./mypgp
+./mypgp -h
 
 # Check if the tests passed and set the exit status accordingly
 if [ $? -eq 0 ]; then

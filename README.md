@@ -1,6 +1,6 @@
-Certainly! Here's a README file for your program "mypgp" to explain its usage and functionality:
 
-mypgp - Data Encryption and Decryption Tool
+# mypgp
+Data Encryption and Decryption Tool
 
 NOMENCLATURE
 --------------------------
