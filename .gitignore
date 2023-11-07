@@ -1,0 +1,4 @@
+*.dSYM
+*_example
+.vscode
+.idea
