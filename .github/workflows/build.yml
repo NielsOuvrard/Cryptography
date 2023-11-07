@@ -20,10 +20,9 @@ jobs:
         make
       working-directory: ${{ github.workspace }}
 
-    - name: Run Tests
+    - name: Run tests
       run: |
-        cd build
-        ctest
+        make test
       working-directory: ${{ github.workspace }}
 
     - name: Upload Test Results
