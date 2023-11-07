@@ -1,6 +1,5 @@
 Certainly! Here's a README file for your program "mypgp" to explain its usage and functionality:
 
-```
 mypgp - Data Encryption and Decryption Tool
 
 NOMENCLATURE
@@ -66,7 +65,5 @@ Contributions and bug reports are welcome. If you encounter any issues or have s
 LICENSE
 --------------------------
 This program is released under the MIT License. See the LICENSE file for details.
-
-```
 
 Feel free to modify this README to suit your specific needs, and make sure to include any additional information or details about the tool that may be necessary for users.
