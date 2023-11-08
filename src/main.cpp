@@ -1,7 +1,6 @@
-#include "config.hpp"
+#include "../include/config.hpp"
 
-void print_usage()
-{
+void print_usage () {
     std::cout << "USAGE" << std::endl;
     std::cout << "  ./mypgp [-xor | -aes | -rsa] [-c | -d] [-b] KEY" << std::endl;
     std::cout << "  the MESSAGE is read from standard input" << std::endl;
@@ -16,13 +15,7 @@ void print_usage()
     std::cout << "  -g P Q      for RSA only: generate a public and private key pair from the prime number P and Q" << std::endl;
 }
 
-<<<<<<< HEAD:main.cpp
 int main (int argc, char* argv[]) {
-=======
-int main(int argc, char *argv[])
-{
-    int option;
->>>>>>> 7595112ec086e6540289f60bb640586c77d08e8d:src/main.cpp
     bool xor_flag = false;
     bool aes_flag = false;
     bool rsa_flag = false;
@@ -30,82 +23,97 @@ int main(int argc, char *argv[])
     bool decrypt_flag = false;
     bool block_mode_flag = false;
     bool generate_key_flag = false;
-    std::string key;
-    std::string input = argv[argc - 1];
+    std::string key = argv[argc - 1];
 
     for (int x = 1; argv[x][0] == '-'; x++) {
+        // std::cout << "argv[" << x << "]: " << argv[x] << std::endl;
         std::string arg = argv[x];
-        if ("-xor" == arg) {
+        if ("-xor" == arg) 
             xor_flag = true;
-            break;
-        }
-        if ("-aes" == arg) {
+        if ("-aes" == arg) 
             aes_flag = true;
-            break;
-        }
-        if ("-rsa" == arg) {
+        if ("-rsa" == arg) 
             rsa_flag = true;
-            break;
-        }
-        if ("-c" == arg) {
+        if ("-c" == arg) 
             encrypt_flag = true;
-            break;
-        }
-        if ("-d" == arg) {
+        if ("-d" == arg) 
             decrypt_flag = true;
-            break;
-        }
         if ("-b" == arg) {
             block_mode_flag = true;
             if (!xor_flag && !aes_flag) {
                 std::cerr << "Block mode (-b) is only valid for -xor and -aes." << std::endl;
-                exit(EXIT_FAILURE);
+                exit(84);
             }
-            break;
         }
         if ("-help" == arg || "-h" == arg) {
             print_usage();
             exit(EXIT_SUCCESS);
         }
-        std::cerr << "Invalid option. Use -h for help." << std::endl;
-        exit(EXIT_FAILURE);
+        // std::cerr << "Invalid option. Use -h for help." << std::endl;
+        // exit(84);
     }
-
-    std::cout << "xor_flag: " << xor_flag << std::endl;
-    std::cout << "aes_flag: " << aes_flag << std::endl;
-    std::cout << "rsa_flag: " << rsa_flag << std::endl;
-    std::cout << "encrypt_flag: " << encrypt_flag << std::endl;
-    std::cout << "decrypt_flag: " << decrypt_flag << std::endl;
-    std::cout << "block_mode_flag: " << block_mode_flag << std::endl;
-    std::cout << "generate_key_flag: " << generate_key_flag << std::endl;
-    std::cout << "key: " << key << std::endl;
-    std::cout << "input: " << input << std::endl;
+    
+    // std::cout << "xor_flag: " << xor_flag << std::endl;
+    // std::cout << "aes_flag: " << aes_flag << std::endl;
+    // std::cout << "rsa_flag: " << rsa_flag << std::endl;
+    // std::cout << "encrypt_flag: " << encrypt_flag << std::endl;
+    // std::cout << "decrypt_flag: " << decrypt_flag << std::endl;
+    // std::cout << "block_mode_flag: " << block_mode_flag << std::endl;
+    // std::cout << "generate_key_flag: " << generate_key_flag << std::endl;
+    std::cout << "key:   " << key << std::endl;
 
     if (!xor_flag && !aes_flag && !rsa_flag) {
         std::cerr << "Select an encryption algorithm (-xor, -aes, -rsa)." << std::endl;
-        exit(EXIT_FAILURE);
+        exit(84);
     }
+
+    // pas de block mode pour rsa
 
     if (!encrypt_flag && !decrypt_flag) {
         std::cerr << "Specify whether to encrypt (-c) or decrypt (-d) the message." << std::endl;
-        exit(EXIT_FAILURE);
+        exit(84);
     }
 
     if (encrypt_flag && decrypt_flag) {
         std::cerr << "Specify either -c (encryption) or -d (decryption), not both." << std::endl;
-        exit(EXIT_FAILURE);
+        exit(84);
     }
 
     if (optind < argc) {
         key = argv[optind];
-    }
-    else {
+    } else {
         std::cerr << "KEY is required. Use -h for help." << std::endl;
-        exit(EXIT_FAILURE);
+        exit(84);
     }
 
-    if (xor_flag && !block_mode_flag) {
-        xorEncryptDecrypt(input, key);
+    std::string input;
+    std::getline(std::cin, input);
+    std::cout << "input: " << input << std::endl;
+
+    if (xor_flag) {
+        if (block_mode_flag) {
+            if (input.length() != key.length()) {
+                std::cerr << "In block mode, MESSAGE and KEY must be of the same size." << "input" << input.length() << "key" << key.length() << std::endl;
+                return 84;
+            }
+        }
+    // std::string key1 = "68656c6c6f20776f726c64";  // "hello world" in ASCII
+    // std::string message = "74657374206d657373616765";  // "test message" in ASCII
+
+    // // Convert key1 and message to binary
+    // std::string binaryKey = hexToBinary(key1);
+    // std::string binaryMessage = hexToBinary(message);
+
+    // // Encrypt
+    // std::string encrypted = xorEncryptDecrypt(binaryMessage, binaryKey);
+
+    // // Decrypt
+    // std::string decrypted = xorEncryptDecrypt(encrypted, binaryKey);
+
+    // // Print results
+    // std::cout << "Encrypted: " << encrypted << std::endl;
+    // std::cout << "Decrypted: " << binaryToAscii(decrypted) << std::endl;
+
     }
 
     return 0;
