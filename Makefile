@@ -2,23 +2,48 @@
 ## Makefile for cpp
 ##
 
-SRC = *.cpp
+SRC_DIR = src
+INCLUDE_DIR = include
+BUILD_DIR = build
+TEST_DIR = test
 
+# Source files
+SRC = $(wildcard $(SRC_DIR)/*.cpp)
+OBJ = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRC))
+
+# Output executable name
 NAME = mypgp
 
-# -Wall -Wextra -Werror
+# Compiler and flags
+CXX = g++
+CXXFLAGS = -std=c++17 -I./$(INCLUDE_DIR)
+CXXFLAGS_WARNINGS = -Wall -Wextra -Werror
+CXXFLAGS_DEBUG = -g -O0 -g3
 
-CMACFLAGS += -g -g3 -std=c++20
+all: $(NAME)
 
-all:
-	@ g++ -o $(NAME) $(SRC) $(CMACFLAGS)
+$(NAME): $(OBJ)
+	@ $(CXX) $(CXXFLAGS) $^ -o $@
+
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp | $(BUILD_DIR)
+	@ $(CXX) $(CXXFLAGS) -c $< -o $@
+
+# Debug target (with additional flags)
+debug: CXXFLAGS += $(CXXFLAGS_DEBUG) $(CXXFLAGS_WARNINGS)
+debug: re
+
+$(BUILD_DIR):
+	@ mkdir -p $(BUILD_DIR)
+
+test: $(NAME)
+	@ ./$(TEST_DIR)/test.sh
 
 clean:
-	rm -f *.o
+	@ rm -rf $(BUILD_DIR)
 
 fclean: clean
-	rm -f $(NAME)
+	@ rm -f $(NAME)
 
 re: fclean all
 
-.PHONY: $(NAME) clean fclean all re
+.PHONY: all clean fclean re debug test
