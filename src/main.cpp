@@ -13,12 +13,13 @@ typedef struct arguments_t {
     // * options
     bool block_mode;
     bool generate_key;
+    bool help;
 } arguments_t;
 
 void print_usage()
 {
     std::cout << "USAGE" << std::endl;
-    std::cout << "  ./mypgp [-xor | -aes | -rsa] [-c | -d] [-b] KEY" << std::endl;
+    std::cout << "  ./mypgp [-xor | -aes | -rsa | -pgp] [-c | -d] [-b] KEY" << std::endl;
     std::cout << "  the MESSAGE is read from standard input" << std::endl;
     std::cout << "DESCRIPTION" << std::endl;
     std::cout << "  -xor        computation using XOR algorithm" << std::endl;
@@ -72,6 +73,7 @@ int handle_arguments(int argc, char **argv, arguments_t *args)
         }
         if ("-help" == arg || "-h" == arg) {
             print_usage();
+            args->help = true;
             return EXIT_SUCCESS;
         }
         std::cerr << "Invalid option. Use -h for help." << std::endl;
@@ -115,7 +117,7 @@ int handle_input(arguments_t *args)
         if (args->block_mode) {
             if (input.length() != args->key.length()) {
                 std::cerr << "In block mode, MESSAGE and KEY must be of the same size."
-                          << "input" << input.length() << "key" << key.length() << std::endl;
+                          << "input" << input.length() << "key" << args->key.length() << std::endl;
                 return 84;
             }
         }
@@ -162,9 +164,12 @@ int handle_input(arguments_t *args)
 
 int main(int argc, char *argv[])
 {
-    arguments_t args = {"", false, false, false, false, false, false, false, false};
+    arguments_t args = {"", false, false, false, false, false, false, false, false, false};
     if (handle_arguments(argc, argv, &args) == EXIT_FAILURE) {
         return EXIT_FAILURE;
+    }
+    if (args.help) {
+        return EXIT_SUCCESS;
     }
 
     handle_input(&args);

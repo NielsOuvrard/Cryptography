@@ -20,13 +20,15 @@ Terminal Command:
 DESCRIPTION
 --------------------------
 ```
-./mypgp [-xor | -aes | -rsa] [-c | -d] [-b] KEY
+./mypgp [-xor | -aes | -rsa | -pgp] [-c | -d] [-b] [KEY]
 ```
+
 > The **MESSAGE** is read from standard input.
 
 - `xor`: Perform encryption/decryption using the XOR algorithm.
 - `aes`: Perform encryption/decryption using the AES algorithm.
 - `rsa`: Perform encryption/decryption using the RSA algorithm.
+- `pgp`: Perform encryption/decryption using both the RSA and AES algorithms.
 - `c`: Indicates that the **MESSAGE** is clear text and should be ciphered.
 - `d`: Indicates that the **MESSAGE** is ciphered text and should be deciphered.
 - `b`: Block mode. For XOR and AES algorithms, this mode works on one block only. A block is of the same size as the key. It means the **message** must be of the same length as the key. **MESSAGE** and KEY must be of the same size.
