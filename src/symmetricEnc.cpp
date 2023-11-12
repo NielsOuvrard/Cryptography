@@ -23,7 +23,8 @@ std::string xorEncryptDecrypt(const std::string &input, const std::string &key)
     std::string output(input.size(), '0');
 
     for (size_t i = 0; i < input.size(); i++) {
-        output[i] = ((input[i] - '0') ^ (key[i % key.size()] - '0')) + '0';
+        char a = CHAR_HEX_TO_INT(input[i]) ^ CHAR_HEX_TO_INT(key[i % key.size()]);
+        output[i] = INT_TO_CHAR_HEX(a);
     }
 
     return output;

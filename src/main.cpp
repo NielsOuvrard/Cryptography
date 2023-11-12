@@ -118,7 +118,7 @@ int handle_input(arguments_t *args)
 {
     std::string input;
     std::getline(std::cin, input);
-    std::cout << "input: " << input << std::endl;
+    // std::cout << "input: " << input << std::endl;
 
     if (args->xor_) {
         if (args->block_mode) {
@@ -127,6 +127,7 @@ int handle_input(arguments_t *args)
                           << "input" << input.length() << "key" << args->key.length() << std::endl;
                 return 84;
             }
+            std::cout << xorEncryptDecrypt(input, args->key) << std::endl;
         }
         /*
         std::string key1 = "68656c6c6f20776f726c64";  // "hello world" in ASCII

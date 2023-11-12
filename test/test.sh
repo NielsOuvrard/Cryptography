@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Run your tests here
-./mypgp -h
+
+./test/test_xor.sh
+
 
 # Check if the tests passed and set the exit status accordingly
 if [ $? -eq 0 ]; then
@@ -11,6 +13,7 @@ else
   echo "Tests failed."
   exit 1  # Failure
 fi
+
 
 
 # XOR
