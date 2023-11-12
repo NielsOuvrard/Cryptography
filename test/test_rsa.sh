@@ -2,25 +2,25 @@
 
 rojo='\033[0;31m'
 verde='\033[0;32m'
-azul='\033[0;34m'
+amarillo='\033[0;33m'
 
 sin_color='\033[0m'
 
-prefix_message="[ ${azul}AES${sin_color} ] "
+prefix_message="[ ${amarillo}RSA${sin_color} ] "
 
 error_encontrado=false
 
-function test_aes_1() {
+function test_rsa_1() {
     mensaje="$1"
     clave="$2"
 
     echo "$mensaje" > test/message
-    cat test/message | ./mypgp -aes -c -b "$clave" > test/ciphered
+    cat test/message | ./mypgp -rsa -c "$clave" > test/ciphered
 
-    if [ "$(cat test/ciphered)" == "3c24744d2bc520ecc7144b55ab5fdc85" ]; then
+    if [ "$(cat test/ciphered)" == "b104" ]; then
         echo -e "${prefix_message}test 1.0 ${verde}passed${sin_color}."
 
-        cat test/ciphered | ./mypgp -aes -d -b "$clave" > test/deciphered
+        cat test/ciphered | ./mypgp -rsa -d "$clave" > test/deciphered
 
         if [ "$(cat test/deciphered)" == "$mensaje" ]; then
             echo -e "${prefix_message}test 1.5 ${verde}passed${sin_color}."
@@ -34,7 +34,7 @@ function test_aes_1() {
     fi
 }
 
-test_aes_1 "c2486f4796f0657481a655c559b38aaa" "6b50fd39f06d33cfefe6936430b6c94f"
+test_rsa_1 "2a" "010001-19bb"
 
 if [ "$error_encontrado" = false ]; then
     echo -e "${prefix_message}${verde}passed${sin_color}."
@@ -44,11 +44,11 @@ else
     exit 1  # Failure
 fi
 
-# AES
-# echo "c2486f4796f0657481a655c559b38aaa" > message
+# RSA
+# echo "2a" > message
 
-# cat message | ./mypgp -aes -c -b 6b50fd39f06d33cfefe6936430b6c94f > ciphered
-# 3c24744d2bc520ecc7144b55ab5fdc85
+# cat message | ./mypgp -rsa -c 010001-19bb > ciphered
+# b104
 
-# cat ciphered | ./mypgp -aes -d -b 6b50fd39f06d33cfefe6936430b6c94f
-# c2486f4796f0657481a655c559b38aaa
+# cat ciphered | ./mypgp -rsa -d 81b3-19bb
+# 2a

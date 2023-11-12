@@ -1,22 +1,32 @@
 #!/bin/bash
 
-# Run your tests here
-./test/test_xor.sh
-./test/test_aes.sh
+error_encontrado=false
 
 rojo='\033[0;31m'
 verde='\033[0;32m'
 
 sin_color='\033[0m'
 
+# Función para ejecutar pruebas
+ejecutar_pruebas() {
+    ./test/"$1"
 
-# TODO: Check if the tests passed and set the exit status accordingly
-if [ $? -eq 0 ]; then
-    echo -e "${verde}Tests passed successfully!${sin_color}"
-else
-    echo -e "${rojo}Tests failed.${sin_color}"
-fi
+    if [ $? -eq 0 ]; then
+        echo -e "${verde}Tests passed successfully!${sin_color}"
+    else
+        echo -e "${rojo}Tests failed.${sin_color}"
+        error_encontrado=true
+    fi
+}
 
+# Ejecutar pruebas para XOR
+ejecutar_pruebas "test_xor.sh"
+
+# Ejecutar pruebas para AES
+ejecutar_pruebas "test_aes.sh"
+
+# Ejecutar pruebas para RSA
+ejecutar_pruebas "test_rsa.sh"
 
 echo -e "\n${verde}Cleaning up...${sin_color}"
 for archivo in test/*; do
@@ -26,18 +36,8 @@ for archivo in test/*; do
     fi
 done
 
-# # TODO: Check if the tests passed and set the exit status accordingly
-# if [ $? -eq 0 ]; then
-#     exit 0  # Success
-# else
-#     exit 1  # Failure
-# fi
-
-# RSA
-# echo "2a" > message
-
-# cat message | ./mypgp -rsa -c 010001-19bb > ciphered
-# b104
-
-# cat ciphered | ./mypgp -rsa -d 81b3-19bb
-# 2a
+if [ "$error_encontrado" = false ]; then
+    exit 0  # Success
+else
+    exit 1  # Failure
+fi
