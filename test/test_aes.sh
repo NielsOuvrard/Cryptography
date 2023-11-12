@@ -2,6 +2,7 @@
 
 source ./test/function_test.sh
 
+error_encontrado=false
 prefix_message="[ ${azul}AES${sin_color} ] "
 index=1
 

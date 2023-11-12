@@ -3,7 +3,6 @@
 source ./test/function_test.sh
 
 error_encontrado=false
-
 prefix_message="[ ${amarillo}XOR${sin_color} ] "
 index=1
 

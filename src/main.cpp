@@ -11,7 +11,7 @@ int handle_input(arguments_t *args)
             if (input.length() != args->key.length()) {
                 std::cerr << "In block mode, MESSAGE and KEY must be of the same size."
                           << "input: " << input.length() << " key: " << args->key.length() << std::endl;
-                return 84;
+                return EXIT_ERROR;
             }
         }
         std::cout << xorEncryptDecrypt(input, args->key) << std::endl;
@@ -20,7 +20,7 @@ int handle_input(arguments_t *args)
             if (input.length() != args->key.length()) {
                 std::cerr << "In block mode, MESSAGE and KEY must be of the same size."
                           << "input" << input.length() << "key" << args->key.length() << std::endl;
-                return 84;
+                return EXIT_ERROR;
             }
             std::cout << aesEncryptDecrypt(input, args->key) << std::endl;
         }
@@ -36,7 +36,7 @@ int handle_input(arguments_t *args)
             if (input.length() != args->key.length()) {
                 std::cerr << "In block mode, MESSAGE and KEY must be of the same size."
                           << "input" << input.length() << "key" << args->key.length() << std::endl;
-                return 84;
+                return EXIT_ERROR;
             }
             // std::cout << pgpEncryptDecrypt(input, args->key) << std::endl;
         }
