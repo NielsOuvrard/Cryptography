@@ -41,7 +41,7 @@ int handle_arguments(int argc, char **argv, arguments_t *args)
         std::cerr << "Invalid number of arguments. Use -h for help." << std::endl;
         return EXIT_ERROR;
     }
-    std::string key = argv[argc - 1];
+    args->key = argv[argc - 1];
 
     for (int x = 1; argv[x] != NULL; x++) {
         if (argv[x][0] != '-') {
