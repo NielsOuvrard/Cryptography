@@ -1,16 +1,5 @@
 #include "config.hpp"
 
-// uint64_t pgcd(uint64_t a, uint64_t b)
-// {
-//     uint64_t r = a % b;
-//     while (r != 0) {
-//         a = b;
-//         b = r;
-//         r = a % b;
-//     }
-//     return b;
-// }
-
 uint64_t pgcd(uint64_t a, uint64_t b)
 {
     while (b != 0) {
@@ -90,13 +79,51 @@ void generateKeyPair(std::string p_str, std::string q_str)
     std::cout << std::endl;
 }
 
-/*
 
-    for (int i = 0; i < 8; i++) {
-        uint8_t bit = 0;// (n >> i) & 1;
-        for (int j = 0; j < 8; j++) {
-            bit = (n >> (i * 8 + j)) & 1;
+// uint64_t str_hexa_to_int(std::string str);
+// std::string int_to_str_hexa(uint64_t n);
+
+uint64_t modPow(uint64_t base, uint64_t exponent, uint64_t modulus)
+{
+    uint64_t result = 1;
+    base = base % modulus;
+    while (exponent > 0) {
+        if (exponent % 2 == 1) {
+            result = (result * base) % modulus;
         }
-        std::cout << INT_TO_CHAR_HEX(bit);
+        exponent >>= 1;
+        base = (base * base) % modulus;
     }
-*/
+    return result;
+}
+
+void rsaEncrypt(std::string input, std::pair<uint64_t, uint64_t> keyPair)
+{
+    uint64_t e = keyPair.first;
+    uint64_t n = keyPair.second;
+    uint64_t c = 0;
+    uint64_t m = 0;
+
+    std::cout << "input: " << input << std::endl;
+
+    for (int i = 0; i < input.length(); i++) {
+        m = m * 16 + input[i];
+    }
+    m = 162;
+    // 1048592
+    e = 1048592;// because little endian
+    std::cout << "m: " << int_to_str_hexa(m) << std::endl;
+    std::cout << "m: " << m << " ** " << int_to_str_hexa(e) << " % " << int_to_str_hexa(n) << std::endl;
+    std::cout << "m: " << m << " ** " << (e) << " % " << (n) << std::endl;
+    // c = pow(m, e);
+    // std::cout << "c: " << int_to_str_hexa(c) << std::endl;
+    // c = c % n;
+    // std::cout << "c: " << int_to_str_hexa(c) << std::endl;
+    modPow(m, e, n);
+
+    showLittleEndianHex(c);
+}
+
+void rsaDecrypt(std::string input, std::pair<uint64_t, uint64_t> keyPair)
+{
+}

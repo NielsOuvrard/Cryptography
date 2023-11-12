@@ -71,3 +71,6 @@ std::string aesEncryptDecrypt(const std::string &input, const std::string &key);
  */
 
 void generateKeyPair(std::string p, std::string q);
+
+void rsaEncrypt(std::string input, std::pair<uint64_t, uint64_t> keyPair);
+void rsaDecrypt(std::string input, std::pair<uint64_t, uint64_t> keyPair);

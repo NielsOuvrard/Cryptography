@@ -1,5 +1,15 @@
 #include "config.hpp"
 
+uint64_t read_from_little_endian(std::string str)
+{
+    uint64_t res = 0;
+    for (int i = str.length() - 1; i >= 0; i -= 2) {
+        res = res * 16 + CHAR_HEX_TO_INT(str[i - 1]);
+        res = res * 16 + CHAR_HEX_TO_INT(str[i]);
+    }
+    return res;
+}
+
 int handle_input(arguments_t *args)
 {
     if (args->generate_key) {
@@ -29,8 +39,14 @@ int handle_input(arguments_t *args)
             std::cout << aesEncryptDecrypt(input, args->key) << std::endl;
         }
     } else if (args->rsa) {
-        // std::cout << "Public key: " << keyPair.first << std::endl;
-        // std::cout << "Private key: " << keyPair.second << std::endl;
+        std::pair<uint64_t, uint64_t> keyPair;
+        keyPair.first = read_from_little_endian(args->key.substr(0, args->key.find("-")));
+        keyPair.second = read_from_little_endian(args->key.substr(args->key.find("-") + 1, args->key.length()));
+        if (args->encrypt) {
+            rsaEncrypt(input, keyPair);
+        } else if (args->decrypt) {
+            rsaDecrypt(input, keyPair);
+        }
     } else if (args->pgp) {
         if (args->block_mode) {
             if (input.length() != args->key.length()) {
