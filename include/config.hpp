@@ -8,7 +8,7 @@
 #include <string>
 
 
-#define EXIT_FAILURE 84
+#define EXIT_ERROR 84
 
 /**
  *  Main 

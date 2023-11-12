@@ -13,6 +13,8 @@ typedef struct arguments_t {
     // * options
     bool block_mode;
     bool generate_key;
+    int p;
+    int q;
     bool help;
 } arguments_t;
 
@@ -35,75 +37,76 @@ void print_usage()
 
 int handle_arguments(int argc, char **argv, arguments_t *args)
 {
-    std::string key = argv[argc - 1];// todo check argc > 1
-
-    for (int x = 1; argv[x][0] == '-'; x++) {
-        std::string arg = argv[x];
-        if ("-xor" == arg) {
-            args->xor_ = true;
-            break;
-        }
-        if ("-aes" == arg) {
-            args->aes = true;
-            break;
-        }
-        if ("-rsa" == arg) {
-            args->rsa = true;
-            break;
-        }
-        if ("-pgp" == arg) {
-            args->pgp = true;
-            break;
-        }
-        if ("-c" == arg) {
-            args->encrypt = true;
-            break;
-        }
-        if ("-d" == arg) {
-            args->decrypt = true;
-            break;
-        }
-        if ("-b" == arg) {
-            args->block_mode = true;
-            if (!args->xor_ && !args->aes) {
-                std::cerr << "Block mode (-b) is only valid for -xor and -aes." << std::endl;
-                return EXIT_FAILURE;
-            }
-            break;
-        }
-        if ("-help" == arg || "-h" == arg) {
-            print_usage();
-            args->help = true;
-            return EXIT_SUCCESS;
-        }
-        std::cerr << "Invalid option. Use -h for help." << std::endl;
-        return EXIT_FAILURE;
+    if (argc < 2) {
+        std::cerr << "Invalid number of arguments. Use -h for help." << std::endl;
+        return EXIT_ERROR;
     }
-    // pas de block mode pour rsa
-    /*
-    if (!xor_flag && !aes_flag && !rsa_flag) {
-        std::cerr << "Select an encryption algorithm (-xor, -aes, -rsa)." << std::endl;
-        exit(84);
-    }
+    std::string key = argv[argc - 1];
 
-
-    if (!encrypt_flag && !decrypt_flag) {
-        std::cerr << "Specify whether to encrypt (-c) or decrypt (-d) the message." << std::endl;
-        exit(84);
+    for (int x = 1; argv[x] != NULL; x++) {
+        if (argv[x][0] != '-') {
+            break;
+        }
+        switch (argv[x][1]) {
+            case 'x':
+                args->xor_ = true;
+                break;
+            case 'a':
+                args->aes = true;
+                break;
+            case 'r':
+                args->rsa = true;
+                break;
+            case 'p':
+                args->pgp = true;
+                break;
+            case 'c':
+                args->encrypt = true;
+                break;
+            case 'd':
+                args->decrypt = true;
+                break;
+            case 'b':
+                args->block_mode = true;
+                break;
+            case 'g':
+                args->generate_key = true;
+                if (argc < x + 3) {
+                    std::cerr << "Invalid number of arguments. Use -h for help." << std::endl;
+                    return EXIT_ERROR;
+                }
+                args->p = std::stoi(argv[++x]);
+                args->q = std::stoi(argv[++x]);
+                break;
+            case 'h':
+                args->help = true;
+                print_usage();
+                break;
+            default:
+                std::cerr << "Invalid option. Use -h for help." << std::endl;
+                return EXIT_ERROR;
+        }
     }
 
-    if (encrypt_flag && decrypt_flag) {
-        std::cerr << "Specify either -c (encryption) or -d (decryption), not both." << std::endl;
-        exit(84);
+    if ((!args->xor_ && !args->aes) && args->block_mode) {
+        std::cerr << "Block mode (-b) is only valid for -xor and -aes." << std::endl;
+        return EXIT_ERROR;
     }
 
-    if (optind < argc) {
-        key = argv[optind];
-    } else {
-        std::cerr << "KEY is required. Use -h for help." << std::endl;
-        exit(84);
+    if (!args->xor_ && !args->aes && !args->rsa && !args->pgp) {
+        std::cerr << "Select only one encryption algorithm (-xor, -aes, -rsa, -pgp)." << std::endl;
+        return EXIT_ERROR;
     }
-    */
+
+    if (!args->generate_key) {
+        if (!args->encrypt && !args->decrypt) {
+            std::cerr << "Specify whether to encrypt (-c) or decrypt (-d) the message." << std::endl;
+            return EXIT_ERROR;
+        } else if (args->encrypt && args->decrypt) {
+            std::cerr << "Specify either -c (encryption) or -d (decryption), not both." << std::endl;
+            return EXIT_ERROR;
+        }
+    }
     return EXIT_SUCCESS;
 }
 
@@ -140,24 +143,10 @@ int handle_input(arguments_t *args)
         std::cout << "Decrypted: " << binaryToAscii(decrypted) << std::endl;
         */
     }
-    if (!args->xor_ && !args->aes && !args->rsa) {
-        std::cerr << "Select only one encryption algorithm (-xor, -aes, -rsa)." << std::endl;
-        return EXIT_FAILURE;
-    }
-
-    if (!args->encrypt && !args->decrypt) {// seems more be || than &&
-        std::cerr << "Specify whether to encrypt (-c) or decrypt (-d) the message." << std::endl;
-        return EXIT_FAILURE;
-    }
-
-    if (args->encrypt && args->decrypt) {
-        std::cerr << "Specify either -c (encryption) or -d (decryption), not both." << std::endl;
-        return EXIT_FAILURE;
-    }
 
     // if() {
     // std::cerr << "KEY is required. Use -h for help." << std::endl;
-    // return EXIT_FAILURE;
+    // return EXIT_ERROR;
     // }
     return EXIT_SUCCESS;
 }
@@ -165,14 +154,13 @@ int handle_input(arguments_t *args)
 int main(int argc, char *argv[])
 {
     arguments_t args = {"", false, false, false, false, false, false, false, false, false};
-    if (handle_arguments(argc, argv, &args) == EXIT_FAILURE) {
-        return EXIT_FAILURE;
-    }
-    if (args.help) {
+
+    if (handle_arguments(argc, argv, &args) == EXIT_ERROR) {
+        return EXIT_ERROR;
+    } else if (args.help) {
         return EXIT_SUCCESS;
     }
 
-    handle_input(&args);
 
     std::cout << "Key: " << args.key << std::endl;
 
@@ -187,6 +175,10 @@ int main(int argc, char *argv[])
               << std::endl;
 
     std::cout << "Block Mode: " << args.block_mode << std::endl;
+    std::cout << "Generate Key: " << args.generate_key << std::endl;
+    std::cout << "P: " << args.p << std::endl;
+    std::cout << "Q: " << args.q << std::endl;
 
+    handle_input(&args);
     return 0;
 }
