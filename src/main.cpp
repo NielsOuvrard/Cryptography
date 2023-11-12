@@ -81,7 +81,7 @@ int handle_arguments(int argc, char **argv, arguments_t *args)
             case 'h':
                 args->help = true;
                 print_usage();
-                break;
+                return EXIT_SUCCESS;
             default:
                 std::cerr << "Invalid option. Use -h for help." << std::endl;
                 return EXIT_ERROR;
