@@ -1,46 +1,15 @@
 #!/bin/bash
 
-rojo='\033[0;31m'
-verde='\033[0;32m'
-viola='\033[0;35m'
-
-sin_color='\033[0m'
+source ./test/function_test.sh
 
 prefix_message="[ ${viola}RSA${sin_color} ] "
+index=1
 
-error_encontrado=false
-
-function test_rsa_1() {
-    mensaje="$1"
-    clave="$2"
-
-    echo "$mensaje" > test/message
-    cat test/message | ./mypgp -rsa -c "$clave" > test/ciphered
-
-    if [ "$(cat test/ciphered)" == "b104" ]; then
-        echo -e "${prefix_message}test 1.0 ${verde}passed${sin_color}."
-
-        cat test/ciphered | ./mypgp -rsa -d "$clave" > test/deciphered
-
-        if [ "$(cat test/deciphered)" == "$mensaje" ]; then
-            echo -e "${prefix_message}test 1.5 ${verde}passed${sin_color}."
-        else
-            echo -e "${prefix_message}test 1.5 ${rojo}failed${sin_color}."
-            error_encontrado=true
-        fi
-    else
-        echo -e "${prefix_message}test 1.0 ${rojo}failed${sin_color}."
-        error_encontrado=true
-    fi
-}
-
-test_rsa_1 "2a" "010001-19bb"
+test_universal "2a" "010001-19bb" "-rsa"
 
 if [ "$error_encontrado" = false ]; then
-    echo -e "${prefix_message}${verde}passed${sin_color}."
     exit 0  # Success
 else
-    echo -e "${prefix_message}${rojo}failed${sin_color}."
     exit 1  # Failure
 fi
 

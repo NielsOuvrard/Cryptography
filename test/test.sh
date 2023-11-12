@@ -1,11 +1,8 @@
 #!/bin/bash
 
+source test/color.sh
+
 error_encontrado=false
-
-rojo='\033[0;31m'
-verde='\033[0;32m'
-
-sin_color='\033[0m'
 
 # Función para ejecutar pruebas
 ejecutar_pruebas() {
@@ -19,13 +16,8 @@ ejecutar_pruebas() {
     fi
 }
 
-# Ejecutar pruebas para XOR
 ejecutar_pruebas "test_xor.sh"
-
-# Ejecutar pruebas para AES
 # ejecutar_pruebas "test_aes.sh"
-
-# Ejecutar pruebas para RSA
 # ejecutar_pruebas "test_rsa.sh"
 
 echo -e "${verde}Cleaning up...${sin_color}"
