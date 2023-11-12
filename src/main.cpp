@@ -106,6 +106,10 @@ int handle_arguments(int argc, char **argv, arguments_t *args)
             std::cerr << "Specify either -c (encryption) or -d (decryption), not both." << std::endl;
             return EXIT_ERROR;
         }
+        // if() {
+        //     std::cerr << "KEY is required. Use -h for help." << std::endl;
+        //     return EXIT_ERROR;
+        // }
     }
     return EXIT_SUCCESS;
 }
@@ -143,25 +147,11 @@ int handle_input(arguments_t *args)
         std::cout << "Decrypted: " << binaryToAscii(decrypted) << std::endl;
         */
     }
-
-    // if() {
-    // std::cerr << "KEY is required. Use -h for help." << std::endl;
-    // return EXIT_ERROR;
-    // }
     return EXIT_SUCCESS;
 }
 
-int main(int argc, char *argv[])
+void print_arguments(arguments_t args)
 {
-    arguments_t args = {"", false, false, false, false, false, false, false, false, false};
-
-    if (handle_arguments(argc, argv, &args) == EXIT_ERROR) {
-        return EXIT_ERROR;
-    } else if (args.help) {
-        return EXIT_SUCCESS;
-    }
-
-
     std::cout << "Key: " << args.key << std::endl;
 
     std::cout << "XOR: " << args.xor_ << std::endl;
@@ -178,6 +168,19 @@ int main(int argc, char *argv[])
     std::cout << "Generate Key: " << args.generate_key << std::endl;
     std::cout << "P: " << args.p << std::endl;
     std::cout << "Q: " << args.q << std::endl;
+}
+
+int main(int argc, char *argv[])
+{
+    arguments_t args = {"", false, false, false, false, false, false, false, false, false};
+
+    if (handle_arguments(argc, argv, &args) == EXIT_ERROR) {
+        return EXIT_ERROR;
+    } else if (args.help) {
+        return EXIT_SUCCESS;
+    }
+
+    // print_arguments(args);
 
     handle_input(&args);
     return 0;
