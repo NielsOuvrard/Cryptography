@@ -1,4 +1,4 @@
-#include "../include/config.hpp"
+#include "config.hpp"
 
 typedef struct arguments_t {
     std::string key;
