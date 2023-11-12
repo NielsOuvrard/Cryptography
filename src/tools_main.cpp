@@ -18,6 +18,25 @@ void print_usage()
     std::cout << "  -g P Q      for RSA only: generate a public and private key pair from the prime number P and Q" << std::endl;
 }
 
+uint64_t str_hexa_to_int(std::string str)
+{
+    uint64_t res = 0;
+    for (int i = 0; i < str.length(); i++) {
+        res = res * 16 + CHAR_HEX_TO_INT(str[i]);
+    }
+    return res;
+}
+
+std::string int_to_str_hexa(uint64_t n)
+{
+    std::string res = "";
+    while (n > 0) {
+        res = static_cast<char>(INT_TO_CHAR_HEX(n % 16)) + res;
+        n /= 16;
+    }
+    return res;
+}
+
 int handle_arguments(int argc, char **argv, arguments_t *args)
 {
     if (argc < 2) {
@@ -58,8 +77,9 @@ int handle_arguments(int argc, char **argv, arguments_t *args)
                     std::cerr << "Invalid number of arguments. Use -h for help." << std::endl;
                     return EXIT_ERROR;
                 }
-                args->p = std::stoi(argv[++x]);
-                args->q = std::stoi(argv[++x]);
+                // todo : in hex
+                args->p = argv[++x];
+                args->q = argv[++x];
                 break;
             case 'h':
                 args->help = true;

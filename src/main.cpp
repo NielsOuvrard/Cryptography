@@ -2,6 +2,10 @@
 
 int handle_input(arguments_t *args)
 {
+    if (args->generate_key) {
+        generateKeyPair(args->p, args->q);
+        return EXIT_SUCCESS;
+    }
     std::string input;
     std::getline(std::cin, input);
     // std::cout << "input: " << input << std::endl;
@@ -25,12 +29,8 @@ int handle_input(arguments_t *args)
             std::cout << aesEncryptDecrypt(input, args->key) << std::endl;
         }
     } else if (args->rsa) {
-        if (args->generate_key) {
-            std::cout << "Generating key pair from P=" << args->p << " and Q=" << args->q << std::endl;
-            // std::pair<int, int> keyPair = generateKeyPair(args->p, args->q);
-            // std::cout << "Public key: " << keyPair.first << std::endl;
-            // std::cout << "Private key: " << keyPair.second << std::endl;
-        }
+        // std::cout << "Public key: " << keyPair.first << std::endl;
+        // std::cout << "Private key: " << keyPair.second << std::endl;
     } else if (args->pgp) {
         if (args->block_mode) {
             if (input.length() != args->key.length()) {
@@ -65,7 +65,10 @@ std::cout << "Decrypted: " << binaryToAscii(decrypted) << std::endl;
 
 int main(int argc, char *argv[])
 {
-    arguments_t args = {"", false, false, false, false, false, false, false, false, false};
+    // for (int i = 256; i < 512; i++)
+    //     std::cout << int_to_str_hexa(i) << std::endl;
+    // return EXIT_SUCCESS;
+    arguments_t args = {"", false, false, false, false, false, false, false, false, "", "", false};
 
     if (handle_arguments(argc, argv, &args) == EXIT_ERROR) {
         return EXIT_ERROR;

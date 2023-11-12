@@ -1,3 +1,6 @@
+
+#pragma once
+
 #include <algorithm>
 #include <bitset>
 #include <cstdlib>
@@ -20,8 +23,8 @@ typedef struct arguments_t {
     // * options
     bool block_mode;
     bool generate_key;
-    int p;
-    int q;
+    std::string p;
+    std::string q;
     bool help;
 } arguments_t;
 
@@ -37,6 +40,9 @@ typedef struct arguments_t {
 void print_usage();
 int handle_arguments(int argc, char **argv, arguments_t *args);
 void print_arguments(arguments_t args);
+
+uint64_t str_hexa_to_int(std::string str);
+std::string int_to_str_hexa(uint64_t n);
 
 /**
  *  Tools
@@ -59,3 +65,9 @@ std::string xorEncryptDecrypt(const std::string &input, const std::string &key);
  */
 
 std::string aesEncryptDecrypt(const std::string &input, const std::string &key);
+
+/**
+ *  RSA
+ */
+
+void generateKeyPair(std::string p, std::string q);
