@@ -12,9 +12,9 @@ ejecutar_pruebas() {
     ./test/"$1"
 
     if [ $? -eq 0 ]; then
-        echo -e "${verde}Tests passed successfully!${sin_color}"
+        echo -e "${verde}Tests passed successfully!${sin_color}\n"
     else
-        echo -e "${rojo}Tests failed.${sin_color}"
+        echo -e "${rojo}Tests failed.${sin_color}\n"
         error_encontrado=true
     fi
 }
@@ -28,7 +28,7 @@ ejecutar_pruebas "test_xor.sh"
 # Ejecutar pruebas para RSA
 # ejecutar_pruebas "test_rsa.sh"
 
-echo -e "\n${verde}Cleaning up...${sin_color}"
+echo -e "${verde}Cleaning up...${sin_color}"
 for archivo in test/*; do
     if [ "$archivo" ] && [ "${archivo##*.}" != "sh" ]; then
         rm "$archivo"
