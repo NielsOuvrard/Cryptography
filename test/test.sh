@@ -3,15 +3,21 @@
 # Run your tests here
 
 ./test/test_xor.sh
+./test/test_aes.sh
+
+rojo='\033[0;31m'
+verde='\033[0;32m'
+
+sin_color='\033[0m'
 
 
 # Check if the tests passed and set the exit status accordingly
 if [ $? -eq 0 ]; then
-  echo "Tests passed successfully!"
-  exit 0  # Success
+    echo -e "${verde}Tests passed successfully!${sin_color}"
+    exit 0  # Success
 else
-  echo "Tests failed."
-  exit 1  # Failure
+    echo -e "${rojo}Tests failed.${sin_color}"
+    exit 1  # Failure
 fi
 
 
