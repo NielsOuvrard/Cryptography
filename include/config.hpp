@@ -9,6 +9,7 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <array>
 
 typedef struct arguments_t {
     std::string key;
