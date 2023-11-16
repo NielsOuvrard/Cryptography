@@ -1,8 +1,8 @@
 #include "config.hpp"
 
-uint64_t read_from_little_endian(std::string str)
+boost::multiprecision::cpp_int read_from_little_endian(std::string str)
 {
-    uint64_t res = 0;
+    boost::multiprecision::cpp_int res = 0;
     for (int i = str.length() - 1; i >= 0; i -= 2) {
         res = res * 16 + CHAR_HEX_TO_INT(str[i - 1]);
         res = res * 16 + CHAR_HEX_TO_INT(str[i]);
@@ -39,7 +39,7 @@ int handle_input(arguments_t *args)
             std::cout << aesEncryptDecrypt(input, args->key) << std::endl;
         }
     } else if (args->rsa) {
-        std::pair<uint64_t, uint64_t> keyPair;
+        std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair;
         keyPair.first = read_from_little_endian(args->key.substr(0, args->key.find("-")));
         keyPair.second = read_from_little_endian(args->key.substr(args->key.find("-") + 1, args->key.length()));
         if (args->encrypt) {

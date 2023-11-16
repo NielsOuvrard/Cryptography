@@ -14,9 +14,11 @@ OBJ = $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRC))
 # Output executable name
 NAME = mypgp
 
+BOOST = /opt/homebrew/Cellar/boost/1.83.0
+
 # Compiler and flags
 CXX = g++
-CXXFLAGS = -std=c++17 -I./$(INCLUDE_DIR)
+CXXFLAGS = -std=c++17 -I./$(INCLUDE_DIR) -I $(BOOST)/include -L $(BOOST)/lib -lboost_system
 CXXFLAGS_WARNINGS = -Wall -Wextra -Werror
 CXXFLAGS_DEBUG = -g -O0 -g3
 

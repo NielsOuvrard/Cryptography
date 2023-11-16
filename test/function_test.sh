@@ -11,7 +11,8 @@ function test_universal() {
     cat test/message | ./mypgp $argumentos -c "$clave" > test/ciphered
 
     if [ $? -eq 0 ]; then
-        printf "${prefix_message}test ${index}.0 ${verde}passed${sin_color}, ciphered: $(cat test/ciphered)\n"
+        printf "${prefix_message}test ${index}.0 ${verde}passed${sin_color}, ciphered:"
+        printf "%s\n" "$(cat test/ciphered)\n"
 
         cat test/ciphered | ./mypgp $argumentos -d "$clave" > test/deciphered
 

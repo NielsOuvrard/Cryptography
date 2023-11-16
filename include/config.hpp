@@ -2,14 +2,15 @@
 #pragma once
 
 #include <algorithm>
+#include <array>
 #include <bitset>
+#include <boost/multiprecision/cpp_int.hpp>
 #include <cstdlib>
 #include <getopt.h>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <array>
 
 typedef struct arguments_t {
     std::string key;
@@ -42,8 +43,8 @@ void print_usage();
 int handle_arguments(int argc, char **argv, arguments_t *args);
 void print_arguments(arguments_t args);
 
-uint64_t str_hexa_to_int(std::string str);
-std::string int_to_str_hexa(uint64_t n);
+boost::multiprecision::cpp_int str_hexa_to_int(std::string str);
+std::string int_to_str_hexa(boost::multiprecision::cpp_int n);
 
 /**
  *  Tools
@@ -73,5 +74,5 @@ std::string aesEncryptDecrypt(const std::string &input, const std::string &key);
 
 void generateKeyPair(std::string p, std::string q);
 
-void rsaEncrypt(std::string input, std::pair<uint64_t, uint64_t> keyPair);
-void rsaDecrypt(std::string input, std::pair<uint64_t, uint64_t> keyPair);
+void rsaEncrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair);
+void rsaDecrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair);
