@@ -72,6 +72,9 @@ std::string aesEncryptDecrypt(const std::string &input, const std::string &key);
  *  RSA
  */
 
+std::string inverse_two_by_two(std::string value);
+std::string inverse_two_by_two_rev(std::string value);
+
 void generateKeyPair(std::string p, std::string q);
 
 void rsaEncrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair);

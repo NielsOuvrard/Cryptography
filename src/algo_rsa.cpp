@@ -1,5 +1,24 @@
 #include "config.hpp"
 
+
+boost::multiprecision::cpp_int str_hexa_to_int(std::string str)
+{
+    boost::multiprecision::cpp_int res = 0;
+    for (int i = 0; i < str.length(); i++) {
+        res = res * 16 + CHAR_HEX_TO_INT(str[i]);
+    }
+    return res;
+}
+
+boost::multiprecision::cpp_int str_hexa_to_int_rev(std::string str)
+{
+    boost::multiprecision::cpp_int res = 0;
+    for (int i = str.length() - 1; i >= 0; i--) {
+        res = res * 16 + CHAR_HEX_TO_INT(str[i]);
+    }
+    return res;
+}
+
 boost::multiprecision::cpp_int pgcd(boost::multiprecision::cpp_int a, boost::multiprecision::cpp_int b)
 {
     while (b != 0) {
@@ -68,6 +87,18 @@ std::string inverse_two_by_two(std::string value)
     std::string new_value = "";
     for (int i = 0; i < value.length(); i += 2) {
         std::string tmp = "";
+        tmp += value[i + 1];
+        tmp += value[i];
+        new_value = new_value + tmp;
+    }
+    return new_value;
+}
+
+std::string inverse_two_by_two_rev(std::string value)
+{
+    std::string new_value = "";
+    for (int i = 0; i < value.length(); i += 2) {
+        std::string tmp = "";
         tmp += value[i];
         tmp += value[i + 1];
         new_value = tmp + new_value;
@@ -77,8 +108,8 @@ std::string inverse_two_by_two(std::string value)
 
 void generateKeyPair(std::string p_str, std::string q_str)
 {
-    boost::multiprecision::cpp_int p = str_hexa_to_int(inverse_two_by_two(p_str));
-    boost::multiprecision::cpp_int q = str_hexa_to_int(inverse_two_by_two(q_str));
+    boost::multiprecision::cpp_int p = str_hexa_to_int_rev(inverse_two_by_two(p_str));
+    boost::multiprecision::cpp_int q = str_hexa_to_int_rev(inverse_two_by_two(q_str));
     boost::multiprecision::cpp_int n = p * q;
     boost::multiprecision::cpp_int phi = (p - 1) * (q - 1);
 
@@ -115,14 +146,6 @@ void generateKeyPair(std::string p_str, std::string q_str)
 // * ∼/B-CNA-500> ./mypgp -rsa -g 4b1da73924978f2e9c1f04170e46820d648edbee12ccf4d4462af89b080c86e1 bb3ca1e126f7c8751bd81bc8daa226494efb3d128f72ed9f6cacbe96e14166cb
 // public key: 010001-c9f91a9ff3bd6d84005b9cc8448296330bd23480f8cf8b36fd4edd0a8cd925de139a0076b962f4d57f50d6f9e64e7c41587784488f923dd60136c763fd602fb3
 // private key: 81b08f4eb6dd8a4dd21728e5194dfc4e349829c9991c8b5e44b31e6ceee1e56a11d66ef23389be92ef7a4178470693f509c90b86d4a1e1831056ca0757f3e209-c9f91a9ff3bd6d84005b9cc8448296330bd23480f8cf8b36fd4edd0a8cd925de139a0076b962f4d57f50d6f9e64e7c41587784488f923dd60136c763fd602fb3
-
-// * ∼/B-CNA-500> echo "c1fa29d40054f3fcb1c15fe4d63d3887" > message
-// * ∼/B-CNA-500> cat message | ./mypgp -rsa -c 010001-c9f91a9ff3bd6d84005b9cc8448296330bd23480f8cf8b36fd4edd0a8cd925de139a0076b962f4d57f50d6f9e64e7c41587784488f923dd60136c763fd602fb3 > ciphered
-// * ∼/B-CNA-500> cat ciphered
-// dc0bd7367d04e5a9e9e14467ff38de0625b3cfa5aabbe86def48bfc93e97aab713d70abf83d263a6dd6570c6d297cc44bad2e0dd2cf7b4c3e0a9749d68ca11a8
-// * ∼/B-CNA-500> cat ciphered | ./mypgp -rsa -d 81b08f4eb6dd8a4dd21728e5194dfc4e349829c9991c8b5e44b31e6ceee1e56a11d66ef23389be92ef7a4178470693f509c90b86d4a1e1831056ca0757f3e209-c9f91a9ff3bd6d84005b9cc8448296330bd23480f8cf8b36fd4edd0a8cd925de139a0076b962f4d57f50d6f9e64e7c41587784488f923dd60136c763fd602fb3
-// c1fa29d40054f3fcb1c15fe4d63d3887
-
 
 // boost::multiprecision::cpp_int str_hexa_to_int(std::string str);
 // std::string int_to_str_hexa(boost::multiprecision::cpp_int n);
@@ -162,34 +185,26 @@ void rsaEncrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boo
     boost::multiprecision::cpp_int e = keyPair.first;
     boost::multiprecision::cpp_int n = keyPair.second;
     boost::multiprecision::cpp_int c = 0;
-    boost::multiprecision::cpp_int m = 0;
-
-    std::cout << "input: " << input << std::endl;
-
-    for (int i = 0; i < input.length(); i++) {
-        m = m * 16 + input[i];
-    }
-    // std::cout << "m: " << int_to_str_hexa(m) << std::endl;
-    // m = 162;
-    m = 42;
-    // std::cout << "m: " << int_to_str_hexa(m) << std::endl;
-    // 1048592
-    // std::cout << "e: " << int_to_str_hexa(e) << std::endl;
-    e = 4112;// because little endian
-    std::cout << "e: " << int_to_str_hexa(e) << std::endl;
-    std::cout << "m: " << int_to_str_hexa(m) << std::endl;
-    // std::cout << "m: " << m << " ** " << (e) << " % " << (n) << std::endl;
-    std::cout << " = " << (m) << " ** " << (e) << " % " << (n) << std::endl;
-    std::cout << " = " << int_to_str_hexa(m) << " ** " << int_to_str_hexa(e) << " % " << int_to_str_hexa(n) << std::endl;
-    // c = pow_boost(m, e);
-    // c = c % n;
+    boost::multiprecision::cpp_int m = str_hexa_to_int_rev(inverse_two_by_two(input));
     c = modPow(m, e, n);
-    std::cout << "c: " << int_to_str_hexa(c) << std::endl;
-    // std::cout << "c: " << (c) << std::endl;
-
     showLittleEndianHex(c);
 }
 
 void rsaDecrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair)
 {
+    boost::multiprecision::cpp_int d = keyPair.first;
+    boost::multiprecision::cpp_int n = keyPair.second;
+    boost::multiprecision::cpp_int m = 0;
+    boost::multiprecision::cpp_int c = str_hexa_to_int_rev(inverse_two_by_two(input));
+    m = modPow(c, d, n);
+    showLittleEndianHex(m);
 }
+
+
+// * ∼/B-CNA-500> echo "c1fa29d40054f3fcb1c15fe4d63d3887" > message
+// * ∼/B-CNA-500> cat message | ./mypgp -rsa -c 010001-c9f91a9ff3bd6d84005b9cc8448296330bd23480f8cf8b36fd4edd0a8cd925de139a0076b962f4d57f50d6f9e64e7c41587784488f923dd60136c763fd602fb3 > ciphered
+// * ∼/B-CNA-500> cat ciphered
+// dc0bd7367d04e5a9e9e14467ff38de0625b3cfa5aabbe86def48bfc93e97aab713d70abf83d263a6dd6570c6d297cc44bad2e0dd2cf7b4c3e0a9749d68ca11a8
+
+// * ∼/B-CNA-500> cat ciphered | ./mypgp -rsa -d 81b08f4eb6dd8a4dd21728e5194dfc4e349829c9991c8b5e44b31e6ceee1e56a11d66ef23389be92ef7a4178470693f509c90b86d4a1e1831056ca0757f3e209-c9f91a9ff3bd6d84005b9cc8448296330bd23480f8cf8b36fd4edd0a8cd925de139a0076b962f4d57f50d6f9e64e7c41587784488f923dd60136c763fd602fb3
+// c1fa29d40054f3fcb1c15fe4d63d3887

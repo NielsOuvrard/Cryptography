@@ -40,8 +40,8 @@ int handle_input(arguments_t *args)
         }
     } else if (args->rsa) {
         std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair;
-        keyPair.first = read_from_little_endian(args->key.substr(0, args->key.find("-")));
-        keyPair.second = read_from_little_endian(args->key.substr(args->key.find("-") + 1, args->key.length()));
+        keyPair.first = str_hexa_to_int(inverse_two_by_two_rev(args->key.substr(0, args->key.find("-"))));
+        keyPair.second = str_hexa_to_int(inverse_two_by_two_rev(args->key.substr(args->key.find("-") + 1, args->key.length())));
         if (args->encrypt) {
             rsaEncrypt(input, keyPair);
         } else if (args->decrypt) {

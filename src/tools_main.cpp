@@ -18,15 +18,6 @@ void print_usage()
     std::cout << "  -g P Q      for RSA only: generate a public and private key pair from the prime number P and Q" << std::endl;
 }
 
-boost::multiprecision::cpp_int str_hexa_to_int(std::string str)
-{
-    boost::multiprecision::cpp_int res = 0;
-    for (int i = 0; i < str.length(); i++) {
-        res = res * 16 + CHAR_HEX_TO_INT(str[i]);
-    }
-    return res;
-}
-
 std::string int_to_str_hexa(boost::multiprecision::cpp_int n)
 {
     std::string res = "";
