@@ -2,19 +2,20 @@
 
 source test/color.sh
 
-function test_universal() {
+function test_rsa() {
     mensaje="$1"
-    clave="$2"
+    clave_public="$2"
     argumentos="$3"
+    clave_private="$4"
 
     echo "$mensaje" > test/message
-    cat test/message | ./mypgp $argumentos -c "$clave" > test/ciphered
+    cat test/message | ./mypgp $argumentos -c "$clave_public" > test/ciphered
 
     if [ $? -eq 0 ]; then
         printf "${prefix_message}test ${index}.0 ${verde}passed${sin_color}, ciphered:"
         printf "%s\n" "$(cat test/ciphered)\n"
 
-        cat test/ciphered | ./mypgp $argumentos -d "$clave" > test/deciphered
+        cat test/ciphered | ./mypgp $argumentos -d "$clave_private" > test/deciphered
 
         if [ "$(cat test/deciphered)" == "$mensaje" ]; then
             echo -e "${prefix_message}test ${index}.5 ${verde}passed${sin_color}."

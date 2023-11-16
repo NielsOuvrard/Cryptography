@@ -188,6 +188,7 @@ void rsaEncrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boo
     boost::multiprecision::cpp_int m = str_hexa_to_int_rev(inverse_two_by_two(input));
     c = modPow(m, e, n);
     showLittleEndianHex(c);
+    std::cout << std::endl;
 }
 
 void rsaDecrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair)
@@ -198,6 +199,7 @@ void rsaDecrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boo
     boost::multiprecision::cpp_int c = str_hexa_to_int_rev(inverse_two_by_two(input));
     m = modPow(c, d, n);
     showLittleEndianHex(m);
+    std::cout << std::endl;
 }
 
 
