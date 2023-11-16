@@ -1,27 +1,10 @@
 #include "config.hpp"
 
-// std::string xorEncrypt(const std::string &message, const std::string &key)
-// {
-//     std::string encryptedMessage;
-//     for (size_t i = 0; i < message.length(); ++i) {
-//         char encryptedByte = message[i] ^ key[i];
-//         encryptedMessage += encryptedByte;
-//     }
-
-//     return stringToHex(encryptedMessage);
-// }
-
-// std::string xorDecrypt(const std::string &encryptedMessage, const std::string &key)
-// {
-//     std::string hexDecryptedMessage = hexToString(encryptedMessage);
-//     return hexToString(xorEncrypt(encryptedMessage, key));
-// }
-
+// Fonction pour créer une matrice 4x4 à partir d'une chaîne hexadécimale
 std::array<std::array<uint8_t, 4>, 4> create_map_from_str(const std::string &str)
 {
     std::array<std::array<uint8_t, 4>, 4> map_map = {0};
 
-    // std::cout << "str: " << str << std::endl;
     int row = 0;
     int col = 0;
     for (int i = 0; i < 16; i++, col++) {
@@ -30,14 +13,14 @@ std::array<std::array<uint8_t, 4>, 4> create_map_from_str(const std::string &str
             col = 0;
         }
         map_map[row][col] = (CHAR_HEX_TO_INT(str[i * 2]) * 16) + CHAR_HEX_TO_INT(str[i * 2 + 1]);
-        // std::cout << "map_map[" << row << "][" << col << "] = " << std::hex << map_map[row][col] << std::endl;
     }
     return map_map;
 }
 
+// Fonction pour afficher une matrice
 void display_map(std::array<std::array<uint8_t, 4>, 4> map)
 {
-    std::cout << "map: " << std::endl;
+    std::cout << "map : " << std::endl;
     for (int i = 0; i < 4; i++) {
         std::cout << "    ";
         for (int j = 0; j < 4; j++) {
@@ -48,8 +31,9 @@ void display_map(std::array<std::array<uint8_t, 4>, 4> map)
     }
 }
 
-// * /////////////////////////////////////////////////////////////////////////// OR EXCLISIF
+// * /////////////////////////////////////////////////////////////////////////// OU EXCLUSIF
 
+// Fonction pour effectuer une opération OU exclusif entre deux matrices 4x4
 std::array<std::array<uint8_t, 4>, 4> or_exclisif_operation(std::array<std::array<uint8_t, 4>, 4> key, std::array<std::array<uint8_t, 4>, 4> input)
 {
     std::array<std::array<uint8_t, 4>, 4> new_map = {0};
@@ -62,20 +46,9 @@ std::array<std::array<uint8_t, 4>, 4> or_exclisif_operation(std::array<std::arra
     return new_map;
 }
 
-// void sub_bytes(std::array<std::array<uint8_t, 4>, 4> &map)
-// {
-//     std::array<std::array<uint8_t, 4>, 4> new_map = {0};
+// * /////////////////////////////////////////////////////////////////////////// SUBSTITUTION D'Octets (SUB BYTES)
 
-//     for (int i = 0; i < 4; i++) {
-//         for (int j = 0; j < 4; i++) {
-//             new_map[i][j] = S_BOX[map[i][j]];
-//         }
-//     }
-//     map = new_map;
-
-// }
-// * /////////////////////////////////////////////////////////////////////////// SUB BYTES
-// Función para calcular el inverso en el cuerpo finito GF(2^8)
+// Fonction pour calculer l'inverse dans le corps fini GF(2^8)
 unsigned char gf28_inverse(uint8_t a)
 {
     uint8_t val = a;
@@ -85,15 +58,15 @@ unsigned char gf28_inverse(uint8_t a)
     return val;
 }
 
-// Función para realizar la sustitución en la generación de la S-Box
+// Fonction pour effectuer la substitution dans la génération de la S-Box
 uint8_t s_boxSubstitution(uint8_t a)
 {
-    // Sustitución afín en el cuerpo finito GF(2^8)
+    // Substitution affine dans le corps fini GF(2^8)
     uint8_t b = gf28_inverse(a);
-    return b ^ 0x63;// Constante de la S-Box
+    return b ^ 0x63; // Constante de la S-Box
 }
 
-// Función para generar la S-Box
+// Fonction pour générer la S-Box
 void generateS_box(uint8_t s_box[256])
 {
     for (int i = 0; i < 256; ++i) {
@@ -101,22 +74,24 @@ void generateS_box(uint8_t s_box[256])
     }
 }
 
+// Fonction pour effectuer la substitution d'octets (SubBytes)
 void sub_byte(std::array<std::array<uint8_t, 4>, 4> &map, uint8_t s_box[256])
 {
     for (int i = 0; i < 4; ++i) {
         for (int j = 0; j < 4; ++j) {
-            // Obtener las coordenadas en la S-Box
-            int row = map[i][j] / 0x10;// Fila en la S-Box
-            int col = map[i][j] % 0x10;// Columna en la S-Box
+            // Obtenir les coordonnées dans la S-Box
+            int row = map[i][j] / 0x10; // Ligne dans la S-Box
+            int col = map[i][j] % 0x10; // Colonne dans la S-Box
 
-            // Realizar la sustitución
+            // Effectuer la substitution
             map[i][j] = s_box[row * 0x10 + col];
         }
     }
 }
 
-// * /////////////////////////////////////////////////////////////////////////// SHIFT ROWS
+//////////////////////////////////////////////////////////////////////////// DÉCALAGE DES LIGNES (SHIFT ROWS)
 
+// Fonction pour décaler les lignes d'une matrice 4x4
 void shift_rows(std::array<std::array<uint8_t, 4>, 4> &map)
 {
     for (int i = 1; i < 4; ++i) {
@@ -124,57 +99,158 @@ void shift_rows(std::array<std::array<uint8_t, 4>, 4> &map)
     }
 }
 
-// * /////////////////////////////////////////////////////////////////////////// MIX COLUMNS
+////////////////////////////////////////////////////////////////////////// MÉLANGE DES COLONNES (MIX COLUMNS)
 
+// Fonction pour effectuer la multiplication dans le corps fini GF(2^8)
+uint8_t gmul(uint8_t a, uint8_t b)
+{
+    uint8_t p = 0;
+    uint8_t carry;
+    for (int i = 0; i < 8; ++i) {
+        if (b & 1) {
+            p ^= a;
+        }
+        carry = a & 0x80;
+        a <<= 1;
+        if (carry) {
+            a ^= 0x1B;  // Constante de multiplication dans GF(2^8) (corqs fini GF(2^8) (8bits/part) fined filed GF(2^8))
+        }
+        b >>= 1;
+    }
+    return p;
+}
+
+
+// Fonction pour mélanger les colonnes d'une matrice 4x4
 void mix_columns(std::array<std::array<uint8_t, 4>, 4> &map)
 {
+    for (int i = 0; i < 4; ++i) {
+        uint8_t a[4];  // Colonne tmp
+
+        // Copier les valeur originale dans la colonne temporair
+        for (int j = 0; j < 4; ++j) {
+            a[j] = map[j][i];
+        }
+
+        // Effectuer les opérations de mélange sur la colonne temporaire
+        map[0][i] = gmul(a[0], 0x02) ^ gmul(a[1], 0x03) ^ a[2] ^ a[3];
+        map[1][i] = a[0] ^ gmul(a[1], 0x02) ^ gmul(a[2], 0x03) ^ a[3];
+        map[2][i] = a[0] ^ a[1] ^ gmul(a[2], 0x02) ^ gmul(a[3], 0x03);
+        map[3][i] = gmul(a[0], 0x03) ^ a[1] ^ a[2] ^ gmul(a[3], 0x02);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////// Ajouter la clé (ADD ROUND KEY)
+
+// Fonction pour fenvelopper une clé autour d'une matrice 4x4
+void add_round_key(std::array<std::array<uint8_t, 4>, 4> &map, const std::array<std::array<uint8_t, 4>, 4> &round_key)
+{
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            map[i][j] ^= round_key[i][j];
+        }
+    }
+}
+
+
+// Génération de la clé de tour à partir de la clé principale
+void generate_round_key(std::array<std::array<uint8_t, 4>, 4> &round_key, const std::array<std::array<uint8_t, 4>, 4> &main_key, int round)
+{
+    // Rotation des octets
+    uint8_t temp = round_key[0][0];
+    round_key[0][0] = round_key[0][1];
+    round_key[0][1] = round_key[0][2];
+    round_key[0][2] = round_key[0][3];
+    round_key[0][3] = temp;
+
+    // Substitution des octets
+    for (int i = 0; i < 4; ++i) {
+        round_key[i][0] = s_boxSubstitution(round_key[i][0]);
+    }
+
+    // Génération de la constante de tour
+    uint8_t rcon = 0x01 << (round - 1);
+
+    // XOR avec la constante de tour
+    round_key[0][0] ^= rcon;
+
+    // XOR avec la clé du tour précédent
+    for (int i = 0; i < 4; ++i) {
+        round_key[i][0] ^= round_key[i][3];
+    }
+
+    // XOR avec la clé principale
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            round_key[i][j] ^= main_key[i][j];
+        }
+    }
+}
+
+std::string map_hex_to_str(const std::array<std::array<uint8_t, 4>, 4>& map) {
+    std::stringstream result;
+
+    for (int row = 0; row < 4; ++row) {
+        for (int col = 0; col < 4; ++col) {
+            // Convert each element to a two-digit uppercase hexadecimal string
+            result << std::setw(2) << std::setfill('0') << std::hex << std::uppercase << static_cast<int>(map[row][col]);
+        }
+    }
+
+    return result.str();
 }
 
 std::string aesEncryptDecrypt(const std::string &input, const std::string &key)
 {
-
     uint8_t s_box[256];
     generateS_box(s_box);
 
-    std::cout << "S-Box:" << std::endl;
-    for (int i = 0; i < 16; ++i) {
-        for (int j = 0; j < 16; ++j) {
-            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(s_box[i * 16 + j]) << " ";
-        }
-        std::cout << std::endl;
+    std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
+    std::array<std::array<uint8_t, 4>, 4> main_key = create_map_from_str(key);
+    std::array<std::array<uint8_t, 4>, 4> round_key;
+
+    // Clé principale inchangée
+    std::array<std::array<uint8_t, 4>, 4> original_main_key = main_key;
+
+    // Clé de tour initiale
+    add_round_key(input_map, main_key);
+
+    // Nombre de tours en fonction de la taille de la clé
+    int num_rounds = 10; // Changer en fonction de la taille de la clé 
+    // TODO: 10 pour 128 bits, 12 pour 192 bits, 14 pour 256 bits
+
+    // Boucle des tours (sauf le dernier)
+    for (int round = 1; round < num_rounds; ++round) {
+        sub_byte(input_map, s_box);
+        shift_rows(input_map);
+        mix_columns(input_map);
+
+        // Génération de la clé de tour à partir de la clé principale
+        round_key = main_key;
+        generate_round_key(round_key, original_main_key, round);
+
+        // Ajout de la clé de tour
+        add_round_key(input_map, round_key);
     }
 
-    std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
-
-    display_map(input_map);
-
+    // Dernier tour sans MixColumns
     sub_byte(input_map, s_box);
-
-    display_map(input_map);
-
     shift_rows(input_map);
 
-    display_map(input_map);
+    // Génération de la clé de tour à partir de la clé principale pour le dernier tour
+    round_key = main_key;
+    generate_round_key(round_key, original_main_key, num_rounds);
 
-    // std::array<std::array<uint8_t, 4>, 4> key_map = create_map_from_str(key);
+    // Ajout de la clé de tour finale
+    add_round_key(input_map, round_key);
 
-    // display_map(key_map);
     // display_map(input_map);
-
-    // std::array<std::array<uint8_t, 4>, 4> new_map = or_exclisif_operation(key_map, input_map);
-
-    // display_map(new_map);
-
-    // for (size_t i = 0; i < input.size(); i++) {
-    //     char a = CHAR_HEX_TO_INT(input[i]) ^ CHAR_HEX_TO_INT(key[i % key.size()]);
-    //     output[i] = INT_TO_CHAR_HEX(a);
-    // }
-
-    std::string output(input.size(), '0');
-    return output;
+    // std::string output(input.size(), '0');
+    return map_hex_to_str(input_map);
 }
 
-// 3c24744d2bc520ecc7144b55ab5fdc85
-// 10 rondas para clave de 128 bits
-// 12 rondas para clave de 192 bits
-// 14 rondas para clave de 256 bits
+// La séquence standard est la suivante :
+// SubBytes
+// ShiftRows
+// MixColumns
+// AddRoundKey
