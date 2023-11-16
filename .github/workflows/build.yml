@@ -12,10 +12,10 @@ jobs:
 
     - name: Set up build environment
       run: |
-        sudo apt-get install boost ;
-        ls /usr/local/Cellar ;
-        ls /usr/local/Cellar/boost ;
-        ls /usr/local/Cellar/boost/
+        sudo apt-get install -y libboost-all-dev
+        # ls /usr/local/Cellar
+        # ls /usr/local/Cellar/boost
+        # ls /usr/local/Cellar/boost/
       shell: bash
 
     - name: Build the project
