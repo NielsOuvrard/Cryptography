@@ -36,7 +36,12 @@ int handle_input(arguments_t *args)
                           << "input" << input.length() << "key" << args->key.length() << std::endl;
                 return EXIT_ERROR;
             }
-            std::cout << aesEncryptDecrypt(input, args->key) << std::endl;
+            if (args->encrypt)
+                std::cout << aesEncrypt(input, args->key) << std::endl;
+            else if (args->decrypt)
+                std::cout << aesDecrypt(input, args->key) << std::endl;
+            else
+                std::cerr << "Error: no mode selected" << std::endl;
         }
     } else if (args->rsa) {
         std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair;

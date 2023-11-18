@@ -5,6 +5,8 @@
 #include <array>
 #include <bitset>
 #include <boost/multiprecision/cpp_int.hpp>
+#include <cassert>
+#include <cmath>
 #include <cstdlib>
 #include <getopt.h>
 #include <iomanip>
@@ -65,8 +67,9 @@ std::string xorEncryptDecrypt(const std::string &input, const std::string &key);
 /**
  *  AES
  */
+std::string aesEncrypt(const std::string &input, const std::string &key);
+std::string aesDecrypt(const std::string &input, const std::string &key);
 
-std::string aesEncryptDecrypt(const std::string &input, const std::string &key);
 
 /**
  *  RSA
