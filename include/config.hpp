@@ -10,6 +10,8 @@
 #include <sstream>
 #include <string>
 #include <array>
+#include <cassert>
+#include <cmath>
 
 typedef struct arguments_t {
     std::string key;
@@ -64,8 +66,9 @@ std::string xorEncryptDecrypt(const std::string &input, const std::string &key);
 /**
  *  AES
  */
+std::string aesEncrypt(const std::string &input, const std::string &key);
+std::string aesDecrypt(const std::string &input, const std::string &key);
 
-std::string aesEncryptDecrypt(const std::string &input, const std::string &key);
 
 /**
  *  RSA
