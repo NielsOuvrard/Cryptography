@@ -1,8 +1,8 @@
 #include "config.hpp"
 
-boost::multiprecision::cpp_int read_from_little_endian(std::string str)
+inf_int read_from_little_endian(std::string str)
 {
-    boost::multiprecision::cpp_int res = 0;
+    inf_int res = 0;
     for (int i = str.length() - 1; i >= 0; i -= 2) {
         res = res * 16 + CHAR_HEX_TO_INT(str[i - 1]);
         res = res * 16 + CHAR_HEX_TO_INT(str[i]);
@@ -36,10 +36,15 @@ int handle_input(arguments_t *args)
                           << "input" << input.length() << "key" << args->key.length() << std::endl;
                 return EXIT_ERROR;
             }
-            std::cout << aesEncryptDecrypt(input, args->key) << std::endl;
+            if (args->encrypt)
+                std::cout << aesEncrypt(input, args->key) << std::endl;
+            else if (args->decrypt)
+                std::cout << aesDecrypt(input, args->key) << std::endl;
+            else
+                std::cerr << "Error: no mode selected" << std::endl;
         }
     } else if (args->rsa) {
-        std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair;
+        std::pair<inf_int, inf_int> keyPair;
         keyPair.first = str_hexa_to_int(inverse_two_by_two_rev(args->key.substr(0, args->key.find("-"))));
         keyPair.second = str_hexa_to_int(inverse_two_by_two_rev(args->key.substr(args->key.find("-") + 1, args->key.length())));
         if (args->encrypt) {

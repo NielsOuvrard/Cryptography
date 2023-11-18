@@ -1,37 +1,37 @@
 #include "config.hpp"
 
 
-boost::multiprecision::cpp_int str_hexa_to_int(std::string str)
+inf_int str_hexa_to_int(std::string str)
 {
-    boost::multiprecision::cpp_int res = 0;
+    inf_int res = 0;
     for (int i = 0; i < str.length(); i++) {
         res = res * 16 + CHAR_HEX_TO_INT(str[i]);
     }
     return res;
 }
 
-boost::multiprecision::cpp_int str_hexa_to_int_rev(std::string str)
+inf_int str_hexa_to_int_rev(std::string str)
 {
-    boost::multiprecision::cpp_int res = 0;
+    inf_int res = 0;
     for (int i = str.length() - 1; i >= 0; i--) {
         res = res * 16 + CHAR_HEX_TO_INT(str[i]);
     }
     return res;
 }
 
-boost::multiprecision::cpp_int pgcd(boost::multiprecision::cpp_int a, boost::multiprecision::cpp_int b)
+inf_int pgcd(inf_int a, inf_int b)
 {
     while (b != 0) {
-        boost::multiprecision::cpp_int temp = b;
+        inf_int temp = b;
         b = a % b;
         a = temp;
     }
     return a;
 }
 
-boost::multiprecision::cpp_int len_nbr(boost::multiprecision::cpp_int value)
+inf_int len_nbr(inf_int value)
 {
-    boost::multiprecision::cpp_int len = 0;
+    inf_int len = 0;
     while (value != 0) {
         value = value / 10;
         len++;
@@ -39,7 +39,7 @@ boost::multiprecision::cpp_int len_nbr(boost::multiprecision::cpp_int value)
     return len;
 }
 
-void showLittleEndianHex(boost::multiprecision::cpp_int value)
+void showLittleEndianHex(inf_int value)
 {
     for (int i = 0; i < len_nbr(value); ++i) {
         // Deja de mostrar al final
@@ -52,10 +52,10 @@ void showLittleEndianHex(boost::multiprecision::cpp_int value)
 }
 
 // Función para encontrar el inverso multiplicativo de 'a' módulo 'm'
-boost::multiprecision::cpp_int modInverse(boost::multiprecision::cpp_int a, boost::multiprecision::cpp_int m)
+inf_int modInverse(inf_int a, inf_int m)
 {
-    boost::multiprecision::cpp_int m0 = m, t, q;
-    boost::multiprecision::cpp_int x0 = 0, x1 = 1;
+    inf_int m0 = m, t, q;
+    inf_int x0 = 0, x1 = 1;
 
     while (a > 1) {
         q = a / m;
@@ -108,14 +108,14 @@ std::string inverse_two_by_two_rev(std::string value)
 
 void generateKeyPair(std::string p_str, std::string q_str)
 {
-    boost::multiprecision::cpp_int p = str_hexa_to_int_rev(inverse_two_by_two(p_str));
-    boost::multiprecision::cpp_int q = str_hexa_to_int_rev(inverse_two_by_two(q_str));
-    boost::multiprecision::cpp_int n = p * q;
-    boost::multiprecision::cpp_int phi = (p - 1) * (q - 1);
+    inf_int p = str_hexa_to_int_rev(inverse_two_by_two(p_str));
+    inf_int q = str_hexa_to_int_rev(inverse_two_by_two(q_str));
+    inf_int n = p * q;
+    inf_int phi = (p - 1) * (q - 1);
 
-    boost::multiprecision::cpp_int e = 0;
-    boost::multiprecision::cpp_int d = 0;
-    boost::multiprecision::cpp_int i = 0;
+    inf_int e = 0;
+    inf_int d = 0;
+    inf_int i = 0;
 
     // if (65537 > phi) {
     e = 65537;
@@ -147,12 +147,12 @@ void generateKeyPair(std::string p_str, std::string q_str)
 // public key: 010001-c9f91a9ff3bd6d84005b9cc8448296330bd23480f8cf8b36fd4edd0a8cd925de139a0076b962f4d57f50d6f9e64e7c41587784488f923dd60136c763fd602fb3
 // private key: 81b08f4eb6dd8a4dd21728e5194dfc4e349829c9991c8b5e44b31e6ceee1e56a11d66ef23389be92ef7a4178470693f509c90b86d4a1e1831056ca0757f3e209-c9f91a9ff3bd6d84005b9cc8448296330bd23480f8cf8b36fd4edd0a8cd925de139a0076b962f4d57f50d6f9e64e7c41587784488f923dd60136c763fd602fb3
 
-// boost::multiprecision::cpp_int str_hexa_to_int(std::string str);
-// std::string int_to_str_hexa(boost::multiprecision::cpp_int n);
+// inf_int str_hexa_to_int(std::string str);
+// std::string int_to_str_hexa(inf_int n);
 
-boost::multiprecision::cpp_int modPow(boost::multiprecision::cpp_int base, boost::multiprecision::cpp_int exponent, boost::multiprecision::cpp_int modulus)
+inf_int modPow(inf_int base, inf_int exponent, inf_int modulus)
 {
-    boost::multiprecision::cpp_int result = 1;
+    inf_int result = 1;
     base = base % modulus;
     while (exponent > 0) {
         if (exponent % 2 == 1) {
@@ -164,9 +164,9 @@ boost::multiprecision::cpp_int modPow(boost::multiprecision::cpp_int base, boost
     return result;
 }
 
-boost::multiprecision::cpp_int pow_boost(boost::multiprecision::cpp_int a, boost::multiprecision::cpp_int b)
+inf_int pow_boost(inf_int a, inf_int b)
 {
-    boost::multiprecision::cpp_int res = 1;
+    inf_int res = 1;
 
     while (b > 0) {
         if (b % 2 == 1)
@@ -180,23 +180,23 @@ boost::multiprecision::cpp_int pow_boost(boost::multiprecision::cpp_int a, boost
 }
 
 
-void rsaEncrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair)
+void rsaEncrypt(std::string input, std::pair<inf_int, inf_int> keyPair)
 {
-    boost::multiprecision::cpp_int e = keyPair.first;
-    boost::multiprecision::cpp_int n = keyPair.second;
-    boost::multiprecision::cpp_int c = 0;
-    boost::multiprecision::cpp_int m = str_hexa_to_int_rev(inverse_two_by_two(input));
+    inf_int e = keyPair.first;
+    inf_int n = keyPair.second;
+    inf_int c = 0;
+    inf_int m = str_hexa_to_int_rev(inverse_two_by_two(input));
     c = modPow(m, e, n);
     showLittleEndianHex(c);
     std::cout << std::endl;
 }
 
-void rsaDecrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair)
+void rsaDecrypt(std::string input, std::pair<inf_int, inf_int> keyPair)
 {
-    boost::multiprecision::cpp_int d = keyPair.first;
-    boost::multiprecision::cpp_int n = keyPair.second;
-    boost::multiprecision::cpp_int m = 0;
-    boost::multiprecision::cpp_int c = str_hexa_to_int_rev(inverse_two_by_two(input));
+    inf_int d = keyPair.first;
+    inf_int n = keyPair.second;
+    inf_int m = 0;
+    inf_int c = str_hexa_to_int_rev(inverse_two_by_two(input));
     m = modPow(c, d, n);
     showLittleEndianHex(m);
     std::cout << std::endl;

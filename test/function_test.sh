@@ -17,7 +17,8 @@ function test_universal() {
         cat test/ciphered | ./mypgp $argumentos -d "$clave" > test/deciphered
 
         if [ "$(cat test/deciphered)" == "$mensaje" ]; then
-            echo -e "${prefix_message}test ${index}.5 ${verde}passed${sin_color}."
+            printf "${prefix_message}test ${index}.5 ${verde}passed${sin_color}, deciphered : $(cat test/deciphered)\n"
+
         else
             echo -e "${prefix_message}test ${index}.5 ${rojo}failed${sin_color}."
             echo -e "$(cat test/deciphered) != $mensaje"
