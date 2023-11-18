@@ -14,6 +14,10 @@
 #include <sstream>
 #include <string>
 
+namespace bm = boost::multiprecision;
+
+using inf_int = bm::cpp_int;
+
 typedef struct arguments_t {
     std::string key;
     // * algorithm
@@ -45,8 +49,8 @@ void print_usage();
 int handle_arguments(int argc, char **argv, arguments_t *args);
 void print_arguments(arguments_t args);
 
-boost::multiprecision::cpp_int str_hexa_to_int(std::string str);
-std::string int_to_str_hexa(boost::multiprecision::cpp_int n);
+inf_int str_hexa_to_int(std::string str);
+std::string int_to_str_hexa(inf_int n);
 
 /**
  *  Tools
@@ -80,5 +84,5 @@ std::string inverse_two_by_two_rev(std::string value);
 
 void generateKeyPair(std::string p, std::string q);
 
-void rsaEncrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair);
-void rsaDecrypt(std::string input, std::pair<boost::multiprecision::cpp_int, boost::multiprecision::cpp_int> keyPair);
+void rsaEncrypt(std::string input, std::pair<inf_int, inf_int> keyPair);
+void rsaDecrypt(std::string input, std::pair<inf_int, inf_int> keyPair);

@@ -18,7 +18,7 @@ void print_usage()
     std::cout << "  -g P Q      for RSA only: generate a public and private key pair from the prime number P and Q" << std::endl;
 }
 
-std::string int_to_str_hexa(boost::multiprecision::cpp_int n)
+std::string int_to_str_hexa(inf_int n)
 {
     std::string res = "";
     while (n > 0) {
