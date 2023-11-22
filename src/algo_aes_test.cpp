@@ -25,7 +25,7 @@ std::array<uint8_t, 256> sbox_transposed = {
         0x77, 0xC9, 0x93, 0x23, 0x2C, 0x00, 0xAA, 0x40, 0x13, 0x4F, 0x3A, 0x37, 0x25, 0xB5, 0x98, 0x89, 
         0x7B, 0x7D, 0x26, 0xC3, 0x1A, 0xED, 0xFB, 0x8F, 0xEC, 0xDC, 0x0A, 0x6D, 0x2E, 0x66, 0x11, 0x0D, 
         0xF2, 0xFA, 0x36, 0x18, 0x1B, 0x20, 0x43, 0x92, 0x5F, 0x22, 0x49, 0x8D, 0x1C, 0x48, 0x69, 0xBF, 
-        0x6B, 0x59, 0x3F, 0x96, 0x6E, 0xFC, 0x4D, 0x9D, 0x97, 0x2A, 0x06, 0xD5, 0xA6, 0x03, 0xD9, 0xE6, 
+        0x6B, 0x59, 0x3F, 0x96, 0x6E, 0xFC, 0x4D, 0x9D, 0x97, 0x2A, 0x06, 0xD5, 0xA6, 0x03, 0xD9, 0xE6,
         0x6F, 0x47, 0xF7, 0x05, 0x5A, 0xB1, 0x33, 0x38, 0x44, 0x90, 0x24, 0x4E, 0xB4, 0xF6, 0x8E, 0x42, 
         0xC5, 0xF0, 0xCC, 0x9A, 0xA0, 0x5B, 0x85, 0xF5, 0x17, 0x88, 0x5C, 0xA9, 0xC6, 0x0E, 0x94, 0x68, 
         0x30, 0xAD, 0x34, 0x07, 0x52, 0x6A, 0x45, 0xBC, 0xC4, 0x46, 0xC2, 0x6C, 0xE8, 0x61, 0x9B, 0x41, 
@@ -51,6 +51,18 @@ uint8_t hexCharToValue(char c) {
     } else {
         // Handle invalid characters
         throw std::invalid_argument("Invalid hexadecimal character");
+    }
+}
+
+// Function to display a map
+void display_map(const std::array<std::array<uint8_t, 4>, 4> &map) {
+    std::cout << '\n';
+    std::cout << '\n';
+    for (const auto &row : map) {
+        for (const auto &cell : row) {
+            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(cell) << ' ';
+        }
+        std::cout << '\n';
     }
 }
 
@@ -110,6 +122,14 @@ void sub_byte(std::array<std::array<uint8_t, 4>, 4> &map, const std::array<uint8
     }
 }
 
+void sub_byte_col(std::array<uint8_t, 4> &map, const std::array<uint8_t, 256> &sbox) {
+        for (int j = 0; j < 4; ++j) {
+            int row = map[j] / 0x10;
+            int col = map[j] % 0x10;
+            map[j] = sbox[col * 0x10 + row];
+        }
+}
+
 // Function to shift the rows of a 4x4 matrix
 void shift_rows(std::array<std::array<uint8_t, 4>, 4> &map) {
     for (int i = 1; i < 4; ++i) {
@@ -148,28 +168,59 @@ void generate_sbox(std::array<uint8_t, 256> &sbox) {
     }
 }
 
-// Function to generate the round key from the main key
-void generate_round_key(std::array<std::array<uint8_t, 4>, 4> &round_key,
-                        const std::array<std::array<uint8_t, 4>, 4> &main_key, int round,
-                        const std::array<uint8_t, 256> &sbox) {
-    // Rotate the last column to the top
-    std::rotate(round_key[0].begin(), round_key[0].begin() + 1, round_key[0].end());
-    std::rotate(round_key[1].begin(), round_key[1].begin() + 1, round_key[1].end());
-    std::rotate(round_key[2].begin(), round_key[2].begin() + 1, round_key[2].end());
-    std::rotate(round_key[3].begin(), round_key[3].begin() + 1, round_key[3].end());
+std::array<uint8_t, 4> rot_word(std::array<uint8_t, 4> &map) {
+    return{{map[1], map[2], map[3], map[0]}};
+}
 
-    // Substitute the bytes using the S-Box
+void display_col (std::array<uint8_t, 4> &col) {
     for (int i = 0; i < 4; ++i) {
-        round_key[i][0] = sbox[round_key[i][0]];
+        std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(col[i]);
     }
+    std::cout << std::endl;
+}
 
-    // XOR with the corresponding main key column
-    for (int i = 0; i < 4; ++i) {
-        round_key[i][0] ^= main_key[i][0];
+void generate_all_round_key(std::array<std::array<uint8_t, 4>, 4> (&round_key)[11], const std::array<std::array<uint8_t, 4>, 4> &main_key, const std::array<uint8_t, 256> &sbox)
+{
+    round_key[0] = main_key;
+    std::array<std::array<uint8_t, 4>, 4> tmp = main_key;
+    std::array<uint8_t, 4> last_col;
+    std::array<uint8_t, 4> current_col;
+
+    for (int round = 1; round < 10; ++round) {
+        std::array<std::array<uint8_t, 4>, 4> tmp_;
+        round_key[round - 1] = tmp;
+        last_col = tmp[3];
+        for (int col = 0; col < 4; ++col) {
+            current_col = tmp[col];
+            display_col(current_col);
+            if (col == 0) {
+                std::array<uint8_t, 4> test = rot_word(current_col);
+                std::cout << "rot_word: ";
+                display_col(test);
+                sub_byte_col(test, sbox);
+                std::cout << "sub_byte: ";
+                display_col(test);
+                for (int i = 0; i < 4; ++i) {
+                    tmp_[col][i] = current_col[i] ^ test[i] ^ Rcon[round];
+                }
+                std::cout << "xor: "; // probleme zor here reprendre ici
+                display_col(tmp_[col]);
+            } else {
+                current_col = tmp[col];
+            }
+        }
+
+        // rot_word(tmp);
+        sub_byte(tmp, sbox);
+        for (int i = 0; i < 4; ++i) {
+            round_key[round][0][i] ^= round_key[round][3][i] ^ Rcon[round];
+        }
+        for (int i = 1; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                round_key[round][i][j] ^= round_key[round][i - 1][j];
+            }
+        }
     }
-
-    // XOR with the round constant for the first byte
-    round_key[0][0] ^= Rcon[round];
 }
 
 // Function to convert a map to a hexadecimal string
@@ -183,64 +234,67 @@ std::string map_to_hex_string(const std::array<std::array<uint8_t, 4>, 4> &map) 
     return result.str();
 }
 
-// Function to display a map
-void display_map(const std::array<std::array<uint8_t, 4>, 4> &map) {
-    std::cout << '\n';
-    std::cout << '\n';
-    for (const auto &row : map) {
-        for (const auto &cell : row) {
-            std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(cell) << ' ';
-        }
-        std::cout << '\n';
-    }
-}
-
 // Function to perform AES encryption
 std::string aesEncrypt(const std::string &input, const std::string &key) {
     std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
     std::array<std::array<uint8_t, 4>, 4> main_key = create_map_from_str(key);
-    std::array<std::array<uint8_t, 4>, 4> round_key;
     // input // c24 86 f4 79 6f 06 57 48 1a 65 5c 55 9b 38 aa a
     // key //   6b50fd39f06d33cfefe6936430b6c94f
     // pass //  0fc668acd39462d17272fe863929973a
     // generate_sbox(const_cast<std::array<uint8_t, 256> &>(sbox));
-    std::cout << input << std::endl;
-    display_map(input_map);
-    sub_byte(input_map, sbox_transposed);
-    display_map(input_map);
-    shift_rows(input_map);
-    display_map(input_map);
+    // std::cout << input << std::endl;
+    // for (int i = 0; i < 4; ++i) {
+        // sub_byte(input_map, sbox_transposed);
+        // display_map(input_map);
 
-    mix_columns(input_map);
+        // shift_rows(input_map);
+        // display_map(input_map);
 
-    display_map(input_map);
+        // mix_columns(input_map);
+        // display_map(input_map);
 
-    add_round_key(input_map, main_key);
-    display_map(input_map);
+        // generate_all_round_key(round_key, main_key, sbox_transposed);
+    // }
 
+
+    std::array<std::array<uint8_t, 4>, 4> round_key;
+    std::array<std::array<uint8_t, 4>, 4> round_keys[11];
+
+    // Générer et afficher les clés de tour
+
+    generate_all_round_key(round_keys, main_key, sbox_transposed);
+
+    for (int round = 0; round <= 10; ++round) {
+        std::cout << "Round " << round << " Key: ";
+        for (int i = 0; i < 4; ++i) {
+            for (int j = 0; j < 4; ++j) {
+                std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(round_keys[round][i][j]);
+            }
+        }
+        std::cout << std::endl;
+    }
     // int num_rounds = 10;
 
     // for (int round = 1; round <= num_rounds; ++round) {
-    //     sub_byte(input_map, sbox);
+    //     sub_byte(input_map, sbox_transposed);
     //     shift_rows(input_map);
     //     mix_columns(input_map);
 
     //     round_key = main_key;
-    //     generate_round_key(round_key, main_key, round, sbox);
+    //     generate_round_key(round_key, main_key, round, sbox_transposed);
 
     //     add_round_key(input_map, round_key);
     // }
 
-    // sub_byte(input_map, sbox);
+    // sub_byte(input_map, sbox_transposed);
     // shift_rows(input_map);
 
     // round_key = main_key;
-    // generate_round_key(round_key, main_key, num_rounds, sbox);
+    // generate_round_key(round_key, main_key, num_rounds, sbox_transposed);
 
     // add_round_key(input_map, round_key);
 
-    // return map_to_hex_string(input_map);
-    return "";
+    return map_to_hex_string(input_map);
 }
 
 
