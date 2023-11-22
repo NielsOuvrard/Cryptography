@@ -39,7 +39,7 @@ int handle_input(arguments_t *args)
             if (args->encrypt)
                 std::cout << aesEncrypt(input, args->key) << std::endl;
             else if (args->decrypt)
-                std::cout << aesDecrypt(input, args->key) << std::endl;
+                std::cout << aesEncrypt(input, args->key) << std::endl;
             else
                 std::cerr << "Error: no mode selected" << std::endl;
         }
