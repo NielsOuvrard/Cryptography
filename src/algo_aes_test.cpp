@@ -230,18 +230,42 @@ void generate_all_round_key(std::array<std::array<uint8_t, 4>, 4> (&round_key)[1
 std::string map_to_hex_string(const std::array<std::array<uint8_t, 4>, 4> &map) {
     std::stringstream result;
     for (const auto &row : map) {
-        for (const auto &cell : row) {
-            result << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(cell);
+        for (auto it = row.rbegin(); it != row.rend(); ++it) {
+            result << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(*it);
         }
     }
     return result.str();
+}
+
+std::string arrayToHexString(const std::array<std::array<uint8_t, 4>, 4>& inputArray) {
+    std::ostringstream oss;
+
+    for (const auto& row : inputArray) {
+        for (const auto& element : row) {
+            // Convert each uint8_t element to a two-digit hexadecimal string
+            // and append the first and last digits to the output string
+            oss << std::hex << std::setw(1) << static_cast<int>(element >> 4);
+            oss << std::hex << std::setw(1) << static_cast<int>(element & 0x0F);
+        }
+    }
+
+    return oss.str();
+}
+
+std::array<std::array<uint8_t, 4>, 4> convert_big_to_little(const std::array<std::array<uint8_t, 4>, 4>& input) {
+       return {{
+        input[0][0], input[1][0], input[2][0], input[3][0],
+        input[0][1], input[1][1], input[2][1], input[3][1],
+        input[0][2], input[1][2], input[2][2], input[3][2],
+        input[0][3], input[1][3], input[2][3], input[3][3]
+    }};
 }
 
 // Function to perform AES encryption
 std::string aesEncrypt(const std::string &input, const std::string &key) {
     std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
     std::array<std::array<uint8_t, 4>, 4> main_key = create_map_from_str(key);
-    // input // c24 86 f4 79 6f 06 57 48 1a 65 5c 55 9b 38 aa a
+    // input // c2486f4796f0657481a655c559b38aaa
     // key //   6b50fd39f06d33cfefe6936430b6c94f
     // pass //  0fc668acd39462d17272fe863929973a
 
@@ -252,15 +276,6 @@ std::string aesEncrypt(const std::string &input, const std::string &key) {
 
     generate_all_round_key(round_keys, main_key, sbox_transposed);
 
-    // for (int round = 0; round <= 10; ++round) {
-    //     std::cout << "Round " << round << " Key: ";
-    //     for (int i = 0; i < 4; ++i) {
-    //         for (int j = 0; j < 4; ++j) {
-    //             std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(round_keys[round][i][j]);
-    //         }
-    //     }
-    //     std::cout << std::endl;
-    // }
     int num_rounds = 10;
 
     std::cout << "Round 0 Key + input: ";
@@ -291,8 +306,9 @@ std::string aesEncrypt(const std::string &input, const std::string &key) {
     shift_rows(input_map);
     display_map(round_keys[10]);
     add_round_key(input_map, round_keys[10]);
-
-    return map_to_hex_string(input_map);
+    display_map(input_map);
+    display_map(convert_big_to_little(input_map));
+    return arrayToHexString(convert_big_to_little(input_map));
 }
 
 
