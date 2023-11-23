@@ -74,7 +74,7 @@ std::string xorEncryptDecrypt(const std::string &input, const std::string &key);
  *  AES
  */
 std::string aesEncrypt(const std::string &input, const std::string &key);
-// std::string aesDecrypt(const std::string &input, const std::string &key);
+std::string aesDecrypt(const std::string &input, const std::string &key);
 
 
 /**

@@ -1,24 +1,5 @@
 #include "config.hpp"
 
-std::array<uint8_t, 256> sbox = {
-        0x63, 0x7C, 0x77, 0x7B, 0xF2, 0x6B, 0x6F, 0xC5, 0x30, 0x01, 0x67, 0x2B, 0xFE, 0xD7, 0xAB, 0x76,
-        0xCA, 0x82, 0xC9, 0x7D, 0xFA, 0x59, 0x47, 0xF0, 0xAD, 0xD4, 0xA2, 0xAF, 0x9C, 0xA4, 0x72, 0xC0,
-        0xB7, 0xFD, 0x93, 0x26, 0x36, 0x3F, 0xF7, 0xCC, 0x34, 0xA5, 0xE5, 0xF1, 0x71, 0xD8, 0x31, 0x15,
-        0x04, 0xC7, 0x23, 0xC3, 0x18, 0x96, 0x05, 0x9A, 0x07, 0x12, 0x80, 0xE2, 0xEB, 0x27, 0xB2, 0x75,
-        0x09, 0x83, 0x2C, 0x1A, 0x1B, 0x6E, 0x5A, 0xA0, 0x52, 0x3B, 0xD6, 0xB3, 0x29, 0xE3, 0x2F, 0x84,
-        0x53, 0xD1, 0x00, 0xED, 0x20, 0xFC, 0xB1, 0x5B, 0x6A, 0xCB, 0xBE, 0x39, 0x4A, 0x4C, 0x58, 0xCF,
-        0xD0, 0xEF, 0xAA, 0xFB, 0x43, 0x4D, 0x33, 0x85, 0x45, 0xF9, 0x02, 0x7F, 0x50, 0x3C, 0x9F, 0xA8,
-        0x51, 0xA3, 0x40, 0x8F, 0x92, 0x9D, 0x38, 0xF5, 0xBC, 0xB6, 0xDA, 0x21, 0x10, 0xFF, 0xF3, 0xD2,
-        0xCD, 0x0C, 0x13, 0xEC, 0x5F, 0x97, 0x44, 0x17, 0xC4, 0xA7, 0x7E, 0x3D, 0x64, 0x5D, 0x19, 0x73,
-        0x60, 0x81, 0x4F, 0xDC, 0x22, 0x2A, 0x90, 0x88, 0x46, 0xEE, 0xB8, 0x14, 0xDE, 0x5E, 0x0B, 0xDB,
-        0xE0, 0x32, 0x3A, 0x0A, 0x49, 0x06, 0x24, 0x5C, 0xC2, 0xD3, 0xAC, 0x62, 0x91, 0x95, 0xE4, 0x79,
-        0xE7, 0xC8, 0x37, 0x6D, 0x8D, 0xD5, 0x4E, 0xA9, 0x6C, 0x56, 0xF4, 0xEA, 0x65, 0x7A, 0xAE, 0x08,
-        0xBA, 0x78, 0x25, 0x2E, 0x1C, 0xA6, 0xB4, 0xC6, 0xE8, 0xDD, 0x74, 0x1F, 0x4B, 0xBD, 0x8B, 0x8A,
-        0x70, 0x3E, 0xB5, 0x66, 0x48, 0x03, 0xF6, 0x0E, 0x61, 0x35, 0x57, 0xB9, 0x86, 0xC1, 0x1D, 0x9E,
-        0xE1, 0xF8, 0x98, 0x11, 0x69, 0xD9, 0x8E, 0x94, 0x9B, 0x1E, 0x87, 0xE9, 0xCE, 0x55, 0x28, 0xDF,
-        0x8C, 0xA1, 0x89, 0x0D, 0xBF, 0xE6, 0x42, 0x68, 0x41, 0x99, 0x2D, 0x0F, 0xB0, 0x54, 0xBB, 0x16
-};
-
 std::array<uint8_t, 256> sbox_transposed = {
         0x63, 0xCA, 0xB7, 0x04, 0x09, 0x53, 0xD0, 0x51, 0xCD, 0x60, 0xE0, 0xE7, 0xBA, 0x70, 0xE1, 0x8C, 
         0x7C, 0x82, 0xFD, 0xC7, 0x83, 0xD1, 0xEF, 0xA3, 0x0C, 0x81, 0x32, 0xC8, 0x78, 0x3E, 0xF8, 0xA1, 
@@ -219,12 +200,44 @@ void generate_all_round_key(std::array<std::array<uint8_t, 4>, 4> (&round_key)[1
         }
         round_key[round] = tmp_;
     }
-    // display_map(round_key[0]);
-    // display_map(round_key[1]);
-    // display_map(round_key[2]);
-    // display_map(round_key[3]);
 }
-// std::cout << "xor inf: " << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(tmp_[0][col]) << static_cast<int>(tmp_[1][col]) << static_cast<int>(tmp_[2][col]) << static_cast<int>(tmp_[3][col]) << std::endl;
+
+void generate_all_round_key_decrypt(std::array<std::array<uint8_t, 4>, 4> (&round_key)[11], const std::array<std::array<uint8_t, 4>, 4> &main_key, const std::array<uint8_t, 256> &sbox)
+{
+    round_key[10] = main_key;
+    std::array<std::array<uint8_t, 4>, 4> tmp = main_key;
+    std::array<uint8_t, 4> last_lign;
+    std::array<uint8_t, 4> current_col;
+    std::array<uint8_t, 4> next_col;
+
+    for (int round = 9; round >= 0; --round) {
+        if (round != 9)
+            tmp = round_key[round + 1];
+        std::array<std::array<uint8_t, 4>, 4> tmp_;
+        last_lign = {{tmp[1][3], tmp[2][3], tmp[3][3], tmp[0][3]}};
+
+        for (int col = 0; col < 4; ++col) {
+            current_col = {{tmp[0][col], tmp[1][col], tmp[2][col], tmp[3][col]}};
+            if (col == 0) {
+                sub_byte_col(last_lign, sbox);
+                for (int i = 0; i < 4; ++i) {
+                    if (i == 0)
+                        tmp_[i][col] = current_col[i] ^= last_lign[i] ^ Rcon[round];
+                    else {
+                        tmp_[i][col] = current_col[i] ^ last_lign[i];
+                    }
+                }
+            } else {
+                std::array<uint8_t, 4> first_col = {{tmp_[0][col - 1], tmp_[1][col - 1], tmp_[2][col - 1], tmp_[3][col - 1]}};
+                for (int i = 0; i < 4; ++i) {
+                    tmp_[i][col] = current_col[i] ^ first_col[i];
+                }
+            }
+        }
+        round_key[round] = tmp_;
+    }
+}
+
 
 // Function to convert a map to a hexadecimal string
 std::string map_to_hex_string(const std::array<std::array<uint8_t, 4>, 4> &map) {
@@ -242,13 +255,10 @@ std::string arrayToHexString(const std::array<std::array<uint8_t, 4>, 4>& inputA
 
     for (const auto& row : inputArray) {
         for (const auto& element : row) {
-            // Convert each uint8_t element to a two-digit hexadecimal string
-            // and append the first and last digits to the output string
             oss << std::hex << std::setw(1) << static_cast<int>(element >> 4);
             oss << std::hex << std::setw(1) << static_cast<int>(element & 0x0F);
         }
     }
-
     return oss.str();
 }
 
@@ -261,84 +271,95 @@ std::array<std::array<uint8_t, 4>, 4> convert_big_to_little(const std::array<std
     }};
 }
 
-// Function to perform AES encryption
+// Function to shift the rows of a 4x4 matrix in the inverse direction
+void inv_shift_rows(std::array<std::array<uint8_t, 4>, 4> &map) {
+    for (int i = 1; i < 4; ++i) {
+        std::rotate(map[i].begin(), map[i].begin() + (4 - i), map[i].end());
+    }
+}
+
+// Function to perform the inverse byte substitution (InvSubBytes)
+void inv_sub_byte(std::array<std::array<uint8_t, 4>, 4> &map, const std::array<uint8_t, 256> &sbox) {
+    for (int i = 0; i < 4; ++i) {
+        for (int j = 0; j < 4; ++j) {
+            int row = map[i][j] / 0x10;
+            int col = map[i][j] % 0x10;
+            map[i][j] = sbox[col * 0x10 + row];
+        }
+    }
+}
+
+// Function to perform the inverse mix columns operation
+void inv_mix_columns(std::array<std::array<uint8_t, 4>, 4> &map) {
+    for (int i = 0; i < 4; ++i) {
+        uint8_t a[4];
+        for (int j = 0; j < 4; ++j) {
+            a[j] = map[j][i];
+        }
+
+        map[0][i] = gmul(a[0], 0x0E) ^ gmul(a[1], 0x0B) ^ gmul(a[2], 0x0D) ^ gmul(a[3], 0x09);
+        map[1][i] = gmul(a[0], 0x09) ^ gmul(a[1], 0x0E) ^ gmul(a[2], 0x0B) ^ gmul(a[3], 0x0D);
+        map[2][i] = gmul(a[0], 0x0D) ^ gmul(a[1], 0x09) ^ gmul(a[2], 0x0E) ^ gmul(a[3], 0x0B);
+        map[3][i] = gmul(a[0], 0x0B) ^ gmul(a[1], 0x0D) ^ gmul(a[2], 0x09) ^ gmul(a[3], 0x0E);
+    }
+}
+
 std::string aesEncrypt(const std::string &input, const std::string &key) {
     std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
     std::array<std::array<uint8_t, 4>, 4> main_key = create_map_from_str(key);
+
     // input // c2486f4796f0657481a655c559b38aaa
     // key //   6b50fd39f06d33cfefe6936430b6c94f
     // pass //  0fc668acd39462d17272fe863929973a
 
-    std::array<std::array<uint8_t, 4>, 4> round_key;
     std::array<std::array<uint8_t, 4>, 4> round_keys[11];
 
-    // Générer et afficher les clés de tour
-
+    // Générer tt les les clés de tour en 1 fois
     generate_all_round_key(round_keys, main_key, sbox_transposed);
 
     int num_rounds = 10;
 
-    std::cout << "Round 0 Key + input: ";
-    display_map(round_keys[0]);
-    display_map(input_map);
-    std::cout << "\n" << std::endl;
     add_round_key(input_map, round_keys[0]);
-    display_map(input_map);
 
     for (int round = 1; round < num_rounds; ++round) {
-        std::cout << "Round " << round << "\n";
-        std::cout << "sub_byte: ";
         sub_byte(input_map, sbox_transposed);
-        display_map(input_map);
-        std::cout << "\nshift_row: ";
         shift_rows(input_map);
-        display_map(input_map);
-        std::cout << "\nmix_col: ";
         mix_columns(input_map);
-        display_map(input_map);
-        std::cout << "\nadd_round_key: ";
         add_round_key(input_map, round_keys[round]);
-        display_map(input_map);
-        std::cout << "\n\n" << std::endl;
     }
 
     sub_byte(input_map, sbox_transposed);
     shift_rows(input_map);
-    display_map(round_keys[10]);
     add_round_key(input_map, round_keys[10]);
-    display_map(input_map);
-    display_map(convert_big_to_little(input_map));
     return arrayToHexString(convert_big_to_little(input_map));
 }
 
 
-std::string aesDecrypt(const std::string &input, const std::string &key)
-{
-    // std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
-    // std::array<std::array<uint8_t, 4>, 4> main_key = create_map_from_str(key);
-    // std::array<std::array<uint8_t, 4>, 4> round_key;
+std::string aesDecrypt(const std::string &input, const std::string &key) {
+    std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
+    std::array<std::array<uint8_t, 4>, 4> main_key = create_map_from_str(key);
 
-    // int num_rounds = 10;
+    std::array<std::array<uint8_t, 4>, 4> round_keys[11];
 
-    // round_key = main_key;
-    // generate_round_key(round_key, main_key, num_rounds, sbox);
+    generate_all_round_key_decrypt(round_keys, main_key, sbox_transposed);
 
-    // add_round_key(input_map, round_key);
-    // shift_rows(input_map);
-    // sub_byte(input_map, sbox);
+    int num_rounds = 10;
 
-    // for (int round = num_rounds - 1; round >= 1; --round) {
-    //     round_key = main_key;
-    //     generate_round_key(round_key, main_key, round, sbox);
+    add_round_key(input_map, round_keys[10]);
+    inv_shift_rows(input_map);
+    inv_sub_byte(input_map, sbox_transposed);
 
-    //     add_round_key(input_map, round_key);
-    //     inv_mix_columns(input_map);
-    //     shift_rows(input_map);
-    //     sub_byte(input_map, sbox);
-    // }
+    for (int round = num_rounds - 1; round > 1; --round) {
+        add_round_key(input_map, round_keys[round]);
+        inv_mix_columns(input_map);
+        inv_shift_rows(input_map);
+        inv_sub_byte(input_map, sbox_transposed);
+    }
 
-    // round_key = main_key;
-    // add_round_key(input_map, round_key);
-    // return map_hex_to_str(input_map);
-    return "";
+    add_round_key(input_map, round_keys[0]);
+    return map_to_hex_string(input_map);
 }
+
+// input // 0fc668acd39462d17272fe863929973a
+// key //   6b50fd39f06d33cfefe6936430b6c94f
+// pass //  c2486f4796f0657481a655c559b38aaa

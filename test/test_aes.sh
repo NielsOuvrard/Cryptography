@@ -27,3 +27,4 @@ fi
 
 # cat ciphered | ./mypgp -aes -d -b 6b50fd39f06d33cfefe6936430b6c94f
 # c2486f4796f0657481a655c559b38aaa
+66322b11e8b92725fd6d624764c1ecad
