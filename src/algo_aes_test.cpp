@@ -38,7 +38,7 @@ std::array<uint8_t, 256> sbox_transposed = {
         0x76, 0xC0, 0x15, 0x75, 0x84, 0xCF, 0xA8, 0xD2, 0x73, 0xDB, 0x79, 0x08, 0x8A, 0x9E, 0xDF, 0x16
 };
 
-const std::array<uint8_t, 10> Rcon = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
+const std::array<uint8_t, 16> Rcon = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80, 0x1B, 0x36};
 
 // Function to convert a hexadecimal character to its corresponding 4-bit value
 uint8_t hexCharToValue(char c) {
@@ -179,49 +179,52 @@ void display_col (std::array<uint8_t, 4> &col) {
     std::cout << std::endl;
 }
 
+void zor_three_value (std::array<uint8_t, 4> &col, std::array<uint8_t, 4> &col2, std::array<uint8_t, 4> &col3) {
+    for (int i = 0; i < 4; ++i) {
+        col[i] ^= col2[i] ^ col3[i];
+    }
+}
+
 void generate_all_round_key(std::array<std::array<uint8_t, 4>, 4> (&round_key)[11], const std::array<std::array<uint8_t, 4>, 4> &main_key, const std::array<uint8_t, 256> &sbox)
 {
     round_key[0] = main_key;
     std::array<std::array<uint8_t, 4>, 4> tmp = main_key;
-    std::array<uint8_t, 4> last_col;
+    std::array<uint8_t, 4> last_lign;
     std::array<uint8_t, 4> current_col;
+    std::array<uint8_t, 4> next_col;
 
     for (int round = 1; round < 10; ++round) {
+        if (round != 1)
+            tmp = round_key[round - 1];
         std::array<std::array<uint8_t, 4>, 4> tmp_;
-        round_key[round - 1] = tmp;
-        last_col = tmp[3];
+        last_lign = {{tmp[1][3], tmp[2][3], tmp[3][3], tmp[0][3]}};
+        
         for (int col = 0; col < 4; ++col) {
-            current_col = tmp[col];
-            display_col(current_col);
+            current_col = {{tmp[0][col], tmp[1][col], tmp[2][col], tmp[3][col]}};
             if (col == 0) {
-                std::array<uint8_t, 4> test = rot_word(current_col);
-                std::cout << "rot_word: ";
-                display_col(test);
-                sub_byte_col(test, sbox);
-                std::cout << "sub_byte: ";
-                display_col(test);
+                sub_byte_col(last_lign, sbox);
                 for (int i = 0; i < 4; ++i) {
-                    tmp_[col][i] = current_col[i] ^ test[i] ^ Rcon[round];
+                    if (i == 0)
+                        tmp_[i][col] = current_col[i] ^= last_lign[i] ^ Rcon[round - 1];
+                    else {
+                        tmp_[i][col] = current_col[i] ^ last_lign[i];
+                    }
                 }
-                std::cout << "xor: "; // probleme zor here reprendre ici
-                display_col(tmp_[col]);
             } else {
-                current_col = tmp[col];
+                std::array<uint8_t, 4> first_col = {{tmp_[0][col - 1], tmp_[1][col - 1], tmp_[2][col - 1], tmp_[3][col - 1]}};
+                for (int i = 0; i < 4; ++i) {
+                    tmp_[i][col] = current_col[i] ^ first_col[i];
+                }
             }
         }
-
-        // rot_word(tmp);
-        sub_byte(tmp, sbox);
-        for (int i = 0; i < 4; ++i) {
-            round_key[round][0][i] ^= round_key[round][3][i] ^ Rcon[round];
-        }
-        for (int i = 1; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                round_key[round][i][j] ^= round_key[round][i - 1][j];
-            }
-        }
+        round_key[round] = tmp_;
     }
+    display_map(round_key[0]);
+    display_map(round_key[1]);
+    display_map(round_key[2]);
+    display_map(round_key[3]);
 }
+// std::cout << "xor inf: " << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(tmp_[0][col]) << static_cast<int>(tmp_[1][col]) << static_cast<int>(tmp_[2][col]) << static_cast<int>(tmp_[3][col]) << std::endl;
 
 // Function to convert a map to a hexadecimal string
 std::string map_to_hex_string(const std::array<std::array<uint8_t, 4>, 4> &map) {
