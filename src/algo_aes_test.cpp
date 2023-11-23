@@ -193,7 +193,7 @@ void generate_all_round_key(std::array<std::array<uint8_t, 4>, 4> (&round_key)[1
     std::array<uint8_t, 4> current_col;
     std::array<uint8_t, 4> next_col;
 
-    for (int round = 1; round < 10; ++round) {
+    for (int round = 1; round < 11; ++round) {
         if (round != 1)
             tmp = round_key[round - 1];
         std::array<std::array<uint8_t, 4>, 4> tmp_;
@@ -219,10 +219,10 @@ void generate_all_round_key(std::array<std::array<uint8_t, 4>, 4> (&round_key)[1
         }
         round_key[round] = tmp_;
     }
-    display_map(round_key[0]);
-    display_map(round_key[1]);
-    display_map(round_key[2]);
-    display_map(round_key[3]);
+    // display_map(round_key[0]);
+    // display_map(round_key[1]);
+    // display_map(round_key[2]);
+    // display_map(round_key[3]);
 }
 // std::cout << "xor inf: " << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(tmp_[0][col]) << static_cast<int>(tmp_[1][col]) << static_cast<int>(tmp_[2][col]) << static_cast<int>(tmp_[3][col]) << std::endl;
 
@@ -244,21 +244,6 @@ std::string aesEncrypt(const std::string &input, const std::string &key) {
     // input // c24 86 f4 79 6f 06 57 48 1a 65 5c 55 9b 38 aa a
     // key //   6b50fd39f06d33cfefe6936430b6c94f
     // pass //  0fc668acd39462d17272fe863929973a
-    // generate_sbox(const_cast<std::array<uint8_t, 256> &>(sbox));
-    // std::cout << input << std::endl;
-    // for (int i = 0; i < 4; ++i) {
-        // sub_byte(input_map, sbox_transposed);
-        // display_map(input_map);
-
-        // shift_rows(input_map);
-        // display_map(input_map);
-
-        // mix_columns(input_map);
-        // display_map(input_map);
-
-        // generate_all_round_key(round_key, main_key, sbox_transposed);
-    // }
-
 
     std::array<std::array<uint8_t, 4>, 4> round_key;
     std::array<std::array<uint8_t, 4>, 4> round_keys[11];
@@ -267,35 +252,45 @@ std::string aesEncrypt(const std::string &input, const std::string &key) {
 
     generate_all_round_key(round_keys, main_key, sbox_transposed);
 
-    for (int round = 0; round <= 10; ++round) {
-        std::cout << "Round " << round << " Key: ";
-        for (int i = 0; i < 4; ++i) {
-            for (int j = 0; j < 4; ++j) {
-                std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(round_keys[round][i][j]);
-            }
-        }
-        std::cout << std::endl;
-    }
-    // int num_rounds = 10;
-
-    // for (int round = 1; round <= num_rounds; ++round) {
-    //     sub_byte(input_map, sbox_transposed);
-    //     shift_rows(input_map);
-    //     mix_columns(input_map);
-
-    //     round_key = main_key;
-    //     generate_round_key(round_key, main_key, round, sbox_transposed);
-
-    //     add_round_key(input_map, round_key);
+    // for (int round = 0; round <= 10; ++round) {
+    //     std::cout << "Round " << round << " Key: ";
+    //     for (int i = 0; i < 4; ++i) {
+    //         for (int j = 0; j < 4; ++j) {
+    //             std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(round_keys[round][i][j]);
+    //         }
+    //     }
+    //     std::cout << std::endl;
     // }
+    int num_rounds = 10;
 
-    // sub_byte(input_map, sbox_transposed);
-    // shift_rows(input_map);
+    std::cout << "Round 0 Key + input: ";
+    display_map(round_keys[0]);
+    display_map(input_map);
+    std::cout << "\n" << std::endl;
+    add_round_key(input_map, round_keys[0]);
+    display_map(input_map);
 
-    // round_key = main_key;
-    // generate_round_key(round_key, main_key, num_rounds, sbox_transposed);
+    for (int round = 1; round < num_rounds; ++round) {
+        std::cout << "Round " << round << "\n";
+        std::cout << "sub_byte: ";
+        sub_byte(input_map, sbox_transposed);
+        display_map(input_map);
+        std::cout << "\nshift_row: ";
+        shift_rows(input_map);
+        display_map(input_map);
+        std::cout << "\nmix_col: ";
+        mix_columns(input_map);
+        display_map(input_map);
+        std::cout << "\nadd_round_key: ";
+        add_round_key(input_map, round_keys[round]);
+        display_map(input_map);
+        std::cout << "\n\n" << std::endl;
+    }
 
-    // add_round_key(input_map, round_key);
+    sub_byte(input_map, sbox_transposed);
+    shift_rows(input_map);
+    display_map(round_keys[10]);
+    add_round_key(input_map, round_keys[10]);
 
     return map_to_hex_string(input_map);
 }
