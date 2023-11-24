@@ -1,5 +1,26 @@
 #include "config.hpp"
 
+std::string stringToHex(const std::string &input)
+{
+    std::ostringstream hexStream;
+    hexStream << std::hex << std::setfill('0');
+    for (char c: input) {
+        hexStream << std::setw(2) << static_cast<int>(static_cast<unsigned char>(c));
+    }
+    return hexStream.str();
+}
+
+std::string hexToString(const std::string &hex)
+{
+    std::string result;
+    for (size_t i = 0; i < hex.length(); i += 2) {
+        std::string byteString = hex.substr(i, 2);
+        char byte = static_cast<char>(std::stoi(byteString, nullptr, 16));
+        result += byte;
+    }
+    return result;
+}
+
 std::string xorEncrypt(const std::string &message, const std::string &key)
 {
     std::string encryptedMessage;

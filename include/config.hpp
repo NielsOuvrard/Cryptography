@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <algorithm>
@@ -7,14 +6,14 @@
 #include <boost/multiprecision/cpp_int.hpp>
 #include <cassert>
 #include <cmath>
+#include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <getopt.h>
 #include <iomanip>
 #include <iostream>
 #include <sstream>
 #include <string>
-#include <cstdint>
-#include <cstring>
 
 namespace bm = boost::multiprecision;
 
@@ -47,22 +46,11 @@ typedef struct arguments_t {
  *  tools main
  */
 
-void print_usage();
 int handle_arguments(int argc, char **argv, arguments_t *args);
 void print_arguments(arguments_t args);
 
 inf_int str_hexa_to_int(std::string str);
 std::string int_to_str_hexa(inf_int n);
-
-/**
- *  Tools
- */
-
-std::string stringToHex(const std::string &input);
-std::string hexToString(const std::string &hex);
-std::string hexToBinary(std::string hex);
-std::string binaryToAscii(std::string binary);
-std::string binaryToHex(std::string binary);
 
 /**
  *  Xor
@@ -73,9 +61,9 @@ std::string xorEncryptDecrypt(const std::string &input, const std::string &key);
 /**
  *  AES
  */
+
 std::string aesEncrypt(const std::string &input, const std::string &key);
 std::string aesDecrypt(const std::string &input, const std::string &key);
-
 
 /**
  *  RSA

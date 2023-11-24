@@ -17,7 +17,7 @@ ejecutar_pruebas() {
 }
 
 ejecutar_pruebas "test_xor.sh"
-# ejecutar_pruebas "test_aes.sh"
+ejecutar_pruebas "test_aes.sh"
 ejecutar_pruebas "test_rsa.sh"
 
 echo -e "${verde}Cleaning up...${sin_color}"

@@ -18,7 +18,6 @@ int handle_input(arguments_t *args)
     }
     std::string input;
     std::getline(std::cin, input);
-    // std::cout << "input: " << input << std::endl;
 
     if (args->xor_) {
         if (args->block_mode) {
@@ -59,36 +58,13 @@ int handle_input(arguments_t *args)
                           << "input" << input.length() << "key" << args->key.length() << std::endl;
                 return EXIT_ERROR;
             }
-            // std::cout << pgpEncryptDecrypt(input, args->key) << std::endl;
         }
     }
     return EXIT_SUCCESS;
 }
 
-/*
-std::string key1 = "68656c6c6f20776f726c64";  // "hello world" in ASCII
-std::string message = "74657374206d657373616765";  // "test message" in ASCII
-
-* Convert key1 and message to binary
-std::string binaryKey = hexToBinary(key1);
-std::string binaryMessage = hexToBinary(message);
-
-* Encrypt
-std::string encrypted = xorEncryptDecrypt(binaryMessage, binaryKey);
-
-* Decrypt
-std::string decrypted = xorEncryptDecrypt(encrypted, binaryKey);
-
-* Print results
-std::cout << "Encrypted: " << encrypted << std::endl;
-std::cout << "Decrypted: " << binaryToAscii(decrypted) << std::endl;
-*/
-
 int main(int argc, char *argv[])
 {
-    // for (int i = 256; i < 512; i++)
-    //     std::cout << int_to_str_hexa(i) << std::endl;
-    // return EXIT_SUCCESS;
     arguments_t args = {"", false, false, false, false, false, false, false, false, "", "", false};
 
     if (handle_arguments(argc, argv, &args) == EXIT_ERROR) {
@@ -96,8 +72,6 @@ int main(int argc, char *argv[])
     } else if (args.help) {
         return EXIT_SUCCESS;
     }
-
-    // print_arguments(args);
 
     return handle_input(&args);
 }

@@ -25,7 +25,6 @@ std::string int_to_str_hexa(inf_int n)
         int i = (n % 16).convert_to<int>();
         int j = ((i >= 0 && i <= 9) ? (i + '0') : (i + 'a' - 10));
         res = (char) j + res;
-        // res = INT_TO_CHAR_HEX(n % 16) + res;
         n /= 16;
     }
     return res;
@@ -103,14 +102,9 @@ int handle_arguments(int argc, char **argv, arguments_t *args)
             std::cerr << "Specify either -c (encryption) or -d (decryption), not both." << std::endl;
             return EXIT_ERROR;
         }
-        // if() {
-        //     std::cerr << "KEY is required. Use -h for help." << std::endl;
-        //     return EXIT_ERROR;
-        // }
     }
     return EXIT_SUCCESS;
 }
-
 
 void print_arguments(arguments_t args)
 {
