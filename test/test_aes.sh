@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ./test/function_test_leo.sh
+source ./test/function_test.sh
 
 error_encontrado=false
 prefix_message="[ ${azul}AES${sin_color} ] "
