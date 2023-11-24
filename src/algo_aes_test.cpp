@@ -124,11 +124,11 @@ void sub_byte(std::array<std::array<uint8_t, 4>, 4> &map, const std::array<uint8
 }
 
 void sub_byte_col(std::array<uint8_t, 4> &map, const std::array<uint8_t, 256> &sbox) {
-        for (int j = 0; j < 4; ++j) {
-            int row = map[j] / 0x10;
-            int col = map[j] % 0x10;
-            map[j] = sbox[col * 0x10 + row];
-        }
+    for (int j = 0; j < 4; ++j) {
+        int row = map[j] / 0x10;
+        int col = map[j] % 0x10;
+        map[j] = sbox[col * 0x10 + row];
+    }
 }
 
 // Function to shift the rows of a 4x4 matrix
@@ -162,28 +162,11 @@ void add_round_key(std::array<std::array<uint8_t, 4>, 4> &map, const std::array<
     }
 }
 
-// Function to generate the S-Box
-void generate_sbox(std::array<uint8_t, 256> &sbox) {
-    for (int i = 0; i < 256; ++i) {
-        sbox[i] = (i <= 0x7F) ? gmul(i, 0x02) : gmul(i, 0x02) ^ 0x1B;
-    }
-}
-
-std::array<uint8_t, 4> rot_word(std::array<uint8_t, 4> &map) {
-    return{{map[1], map[2], map[3], map[0]}};
-}
-
 void display_col (std::array<uint8_t, 4> &col) {
     for (int i = 0; i < 4; ++i) {
         std::cout << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(col[i]);
     }
     std::cout << std::endl;
-}
-
-void zor_three_value (std::array<uint8_t, 4> &col, std::array<uint8_t, 4> &col2, std::array<uint8_t, 4> &col3) {
-    for (int i = 0; i < 4; ++i) {
-        col[i] ^= col2[i] ^ col3[i];
-    }
 }
 
 void generate_all_round_key(std::array<std::array<uint8_t, 4>, 4> (&round_key)[11], const std::array<std::array<uint8_t, 4>, 4> &main_key, const std::array<uint8_t, 256> &sbox)
@@ -221,43 +204,6 @@ void generate_all_round_key(std::array<std::array<uint8_t, 4>, 4> (&round_key)[1
         round_key[round] = tmp_;
     }
 }
-
-void generate_all_round_key_decrypt(std::array<std::array<uint8_t, 4>, 4> (&round_key)[11], const std::array<std::array<uint8_t, 4>, 4> &main_key, const std::array<uint8_t, 256> &sbox)
-{
-    round_key[10] = main_key;
-    std::array<std::array<uint8_t, 4>, 4> tmp = main_key;
-    std::array<uint8_t, 4> last_lign;
-    std::array<uint8_t, 4> current_col;
-    std::array<uint8_t, 4> next_col;
-
-    for (int round = 9; round >= 0; --round) {
-        if (round != 9)
-            tmp = round_key[round + 1];
-        std::array<std::array<uint8_t, 4>, 4> tmp_;
-        last_lign = {{tmp[1][3], tmp[2][3], tmp[3][3], tmp[0][3]}};
-
-        for (int col = 0; col < 4; ++col) {
-            current_col = {{tmp[0][col], tmp[1][col], tmp[2][col], tmp[3][col]}};
-            if (col == 0) {
-                sub_byte_col(last_lign, sbox);
-                for (int i = 0; i < 4; ++i) {
-                    if (i == 0)
-                        tmp_[i][col] = current_col[i] ^= last_lign[i] ^ Rcon[round];
-                    else {
-                        tmp_[i][col] = current_col[i] ^ last_lign[i];
-                    }
-                }
-            } else {
-                std::array<uint8_t, 4> first_col = {{tmp_[0][col - 1], tmp_[1][col - 1], tmp_[2][col - 1], tmp_[3][col - 1]}};
-                for (int i = 0; i < 4; ++i) {
-                    tmp_[i][col] = current_col[i] ^ first_col[i];
-                }
-            }
-        }
-        round_key[round] = tmp_;
-    }
-}
-
 
 // Function to convert a map to a hexadecimal string
 std::string map_to_hex_string(const std::array<std::array<uint8_t, 4>, 4> &map) {
@@ -327,14 +273,8 @@ void inv_mix_columns(std::array<std::array<uint8_t, 4>, 4> &map) {
 std::string aesEncrypt(const std::string &input, const std::string &key) {
     std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
     std::array<std::array<uint8_t, 4>, 4> main_key = create_map_from_str(key);
-
-    // input // c2486f4796f0657481a655c559b38aaa
-    // key //   6b50fd39f06d33cfefe6936430b6c94f
-    // pass //  0fc668acd39462d17272fe863929973a
-
     std::array<std::array<uint8_t, 4>, 4> round_keys[11];
 
-    // Générer tt les les clés de tour en 1 fois
     generate_all_round_key(round_keys, main_key, sbox_transposed);
 
     int num_rounds = 10;
@@ -359,53 +299,23 @@ std::string aesEncrypt(const std::string &input, const std::string &key) {
 std::string aesDecrypt(const std::string &input, const std::string &key) {
     std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
     std::array<std::array<uint8_t, 4>, 4> main_key = create_map_from_str(key);
-
     std::array<std::array<uint8_t, 4>, 4> round_keys[11];
 
     generate_all_round_key(round_keys, main_key, sbox_transposed);
 
     int num_rounds = 10;
 
-    std::cout << "Round 0 Key + input: ";
-    display_map(round_keys[10]);
-    display_map(input_map);
-    std::cout << "\n" << std::endl;
-
-    std::cout << "\nadd_round_key: ";
     add_round_key(input_map, round_keys[10]);
-    display_map(input_map);
-    std::cout << "\nshift_row: ";
     inv_shift_rows(input_map);
-    display_map(input_map);
-    std::cout << "sub_byte: ";
     inv_sub_byte(input_map, inv_sbox);
-    display_map(input_map);
 
     for (int round = num_rounds - 1; round >= 1; --round) {
-        std::cout << "Round " << round << "\n";
-        display_map(input_map);
-        std::cout << "\nadd_round_key: ";
         add_round_key(input_map, round_keys[round]);
-        display_map(input_map);
-        std::cout << "\nmix_col: ";
         inv_mix_columns(input_map);
-        display_map(input_map);
-        std::cout << "\nshift_row: ";
         inv_shift_rows(input_map);
-        display_map(input_map);
-        std::cout << "sub_byte: ";
         inv_sub_byte(input_map, inv_sbox);
-        display_map(input_map);
-        std::cout << "\n\n" << std::endl;
     }
-        display_map(input_map);
-
     add_round_key(input_map, round_keys[0]);
-        display_map(input_map);
 
     return arrayToHexString(convert_big_to_little(input_map));
 }
-
-// input // 0fc668acd39462d17272fe863929973a
-// key //   6b50fd39f06d33cfefe6936430b6c94f
-// pass //  c2486f4796f0657481a655c559b38aaa
