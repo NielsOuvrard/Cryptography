@@ -5,5 +5,6 @@ verde='\033[0;32m'
 azul='\033[0;34m'
 amarillo='\033[0;33m'
 viola='\033[0;35m'
+naraja='\033[0;36m'
 
 sin_color='\033[0m'

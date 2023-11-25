@@ -74,5 +74,12 @@ std::string inverse_two_by_two_rev(std::string value);
 
 void generateKeyPair(std::string p, std::string q);
 
-void rsaEncrypt(std::string input, std::pair<inf_int, inf_int> keyPair);
-void rsaDecrypt(std::string input, std::pair<inf_int, inf_int> keyPair);
+std::string rsaEncrypt(std::string input, std::pair<inf_int, inf_int> keyPair);
+std::string rsaDecrypt(std::string input, std::pair<inf_int, inf_int> keyPair);
+
+/**
+ *  PGP
+ */
+
+std::string pgpEncrypt(const std::string &message, const std::string &key);
+std::string pgpDecrypt(const std::string &encryptedMessage, const std::string &key);

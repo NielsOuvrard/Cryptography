@@ -47,18 +47,19 @@ int handle_input(arguments_t *args)
         keyPair.first = str_hexa_to_int(inverse_two_by_two_rev(args->key.substr(0, args->key.find("-"))));
         keyPair.second = str_hexa_to_int(inverse_two_by_two_rev(args->key.substr(args->key.find("-") + 1, args->key.length())));
         if (args->encrypt) {
-            rsaEncrypt(input, keyPair);
+            std::cout << rsaEncrypt(input, keyPair) << std::endl;
         } else if (args->decrypt) {
-            rsaDecrypt(input, keyPair);
+            std::cout << rsaDecrypt(input, keyPair) << std::endl;
+        } else {
+            std::cerr << "Error: no mode selected" << std::endl;
         }
     } else if (args->pgp) {
-        if (args->block_mode) {
-            if (input.length() != args->key.length()) {
-                std::cerr << "In block mode, MESSAGE and KEY must be of the same size."
-                          << "input" << input.length() << "key" << args->key.length() << std::endl;
-                return EXIT_ERROR;
-            }
-        }
+        if (args->encrypt)
+            std::cout << pgpEncrypt(input, args->key) << std::endl;
+        else if (args->decrypt)
+            std::cout << pgpDecrypt(input, args->key) << std::endl;
+        else
+            std::cerr << "Error: no mode selected" << std::endl;
     }
     return EXIT_SUCCESS;
 }

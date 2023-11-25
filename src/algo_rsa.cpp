@@ -38,6 +38,21 @@ inf_int len_nbr(inf_int value)
     return len;
 }
 
+std::string toLittleEndianHex(inf_int value)
+{
+    std::ostringstream hexStringStream;
+    for (int i = 0; i < len_nbr(value); ++i) {
+        // Deja de mostrar al final
+        if (i > 0 && (value >> (i * 8)) == 0) {
+            break;
+        }
+        uint8_t byte = static_cast<uint8_t>((value >> (i * 8)) & 0xFF);
+        hexStringStream << std::hex << std::setw(2) << std::setfill('0') << static_cast<int>(byte);
+    }
+    std::string hexString = hexStringStream.str();
+    return hexString;
+}
+
 void showLittleEndianHex(inf_int value)
 {
     for (int i = 0; i < len_nbr(value); ++i) {
@@ -163,24 +178,22 @@ inf_int pow_boost(inf_int a, inf_int b)
     return res;
 }
 
-void rsaEncrypt(std::string input, std::pair<inf_int, inf_int> keyPair)
+std::string rsaEncrypt(std::string input, std::pair<inf_int, inf_int> keyPair)
 {
     inf_int e = keyPair.first;
     inf_int n = keyPair.second;
     inf_int c = 0;
     inf_int m = str_hexa_to_int_rev(inverse_two_by_two(input));
     c = modPow(m, e, n);
-    showLittleEndianHex(c);
-    std::cout << std::endl;
+    return toLittleEndianHex(c);
 }
 
-void rsaDecrypt(std::string input, std::pair<inf_int, inf_int> keyPair)
+std::string rsaDecrypt(std::string input, std::pair<inf_int, inf_int> keyPair)
 {
     inf_int d = keyPair.first;
     inf_int n = keyPair.second;
     inf_int m = 0;
     inf_int c = str_hexa_to_int_rev(inverse_two_by_two(input));
     m = modPow(c, d, n);
-    showLittleEndianHex(m);
-    std::cout << std::endl;
+    return toLittleEndianHex(m);
 }
