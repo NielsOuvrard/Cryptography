@@ -291,7 +291,7 @@ void inv_mix_columns(std::array<std::array<uint8_t, 4>, 4> &map)
     }
 }
 
-std::string aesEncrypt(const std::string &input, const std::string &key)
+std::string aesEncryptAlgo(const std::string &input, const std::string &key)
 {
     std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
     std::array<std::array<uint8_t, 4>, 4> main_key = create_map_from_str(key);
@@ -316,6 +316,17 @@ std::string aesEncrypt(const std::string &input, const std::string &key)
     return arrayToHexString(convert_big_to_little(input_map));
 }
 
+
+std::string aesEncrypt(const std::string &input, const std::string &key)
+{
+    std::ostringstream result;
+    for (size_t i = 0; i < input.length(); i += 32) {
+        std::string tmp = input.substr(i, 32);
+        result << aesEncryptAlgo(tmp, key);
+    }
+    return result.str();
+}
+
 std::string removeTrailingZeros(const std::string &input)
 {
     std::string result = input;
@@ -327,7 +338,7 @@ std::string removeTrailingZeros(const std::string &input)
     return result;
 }
 
-std::string aesDecrypt(const std::string &input, const std::string &key)
+std::string aesDecryptAlgo(const std::string &input, const std::string &key)
 {
     std::array<std::array<uint8_t, 4>, 4> input_map = create_map_from_str(input);
     std::array<std::array<uint8_t, 4>, 4> main_key = create_map_from_str(key);
@@ -350,4 +361,14 @@ std::string aesDecrypt(const std::string &input, const std::string &key)
     add_round_key(input_map, round_keys[0]);
 
     return removeTrailingZeros(arrayToHexString(convert_big_to_little(input_map)));
+}
+
+std::string aesDecrypt(const std::string &input, const std::string &key)
+{
+    std::ostringstream result;
+    for (size_t i = 0; i < input.length(); i += 32) {
+        std::string tmp = input.substr(i, 32);
+        result << aesDecryptAlgo(tmp, key);
+    }
+    return result.str();
 }
