@@ -88,10 +88,19 @@ uint8_t stringTobits(const std::string &substring)
 // Function to create a 4x4 matrix from a hexadecimal string
 std::array<std::array<uint8_t, 4>, 4> create_map_from_str(const std::string &str)
 {
-    return {{stringTobits(str.substr(0, 2)), stringTobits(str.substr(8, 2)), stringTobits(str.substr(16, 2)), stringTobits(str.substr(24, 2)),
-             stringTobits(str.substr(2, 2)), stringTobits(str.substr(10, 2)), stringTobits(str.substr(18, 2)), stringTobits(str.substr(26, 2)),
-             stringTobits(str.substr(4, 2)), stringTobits(str.substr(12, 2)), stringTobits(str.substr(20, 2)), stringTobits(str.substr(28, 2)),
-             stringTobits(str.substr(6, 2)), stringTobits(str.substr(14, 2)), stringTobits(str.substr(22, 2)), stringTobits(str.substr(30, 2))}};
+    std::string tmp = str;
+    if (str.length() < 32) {
+        std::ostringstream oss;
+        oss << str;
+        while (oss.str().length() < 32) {
+            oss << '0';
+        }
+        tmp = oss.str();
+    }
+    return {{stringTobits(tmp.substr(0, 2)), stringTobits(tmp.substr(8, 2)), stringTobits(tmp.substr(16, 2)), stringTobits(tmp.substr(24, 2)),
+             stringTobits(tmp.substr(2, 2)), stringTobits(tmp.substr(10, 2)), stringTobits(tmp.substr(18, 2)), stringTobits(tmp.substr(26, 2)),
+             stringTobits(tmp.substr(4, 2)), stringTobits(tmp.substr(12, 2)), stringTobits(tmp.substr(20, 2)), stringTobits(tmp.substr(28, 2)),
+             stringTobits(tmp.substr(6, 2)), stringTobits(tmp.substr(14, 2)), stringTobits(tmp.substr(22, 2)), stringTobits(tmp.substr(30, 2))}};
 }
 
 
@@ -307,6 +316,16 @@ std::string aesEncrypt(const std::string &input, const std::string &key)
     return arrayToHexString(convert_big_to_little(input_map));
 }
 
+std::string removeTrailingZeros(const std::string &input)
+{
+    std::string result = input;
+
+    while (result.length() >= 2 && result.substr(result.length() - 2) == "00") {
+        result.erase(result.length() - 2);
+    }
+
+    return result;
+}
 
 std::string aesDecrypt(const std::string &input, const std::string &key)
 {
@@ -330,5 +349,5 @@ std::string aesDecrypt(const std::string &input, const std::string &key)
     }
     add_round_key(input_map, round_keys[0]);
 
-    return arrayToHexString(convert_big_to_little(input_map));
+    return removeTrailingZeros(arrayToHexString(convert_big_to_little(input_map)));
 }

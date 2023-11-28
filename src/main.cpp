@@ -35,13 +35,13 @@ int handle_input(arguments_t *args)
                           << "input" << input.length() << "key" << args->key.length() << std::endl;
                 return EXIT_ERROR;
             }
-            if (args->encrypt)
-                std::cout << aesEncrypt(input, args->key) << std::endl;
-            else if (args->decrypt)
-                std::cout << aesDecrypt(input, args->key) << std::endl;
-            else
-                std::cerr << "Error: no mode selected" << std::endl;
         }
+        if (args->encrypt)
+            std::cout << aesEncrypt(input, args->key) << std::endl;
+        else if (args->decrypt)
+            std::cout << aesDecrypt(input, args->key) << std::endl;
+        else
+            std::cerr << "Error: no mode selected" << std::endl;
     } else if (args->rsa) {
         std::pair<inf_int, inf_int> keyPair;
         keyPair.first = str_hexa_to_int(inverse_two_by_two_rev(args->key.substr(0, args->key.find("-"))));
