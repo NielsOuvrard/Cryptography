@@ -48,7 +48,7 @@ Terminal Command:
 - `b`: Block mode. For XOR and AES algorithms, this mode works on one block only. A block is of the same size as the key. It means the **message** must be of the same length as the key. **MESSAGE** and KEY must be of the same size.
 - `g` `P` `Q`: For RSA only, generate a public and private key pair from the prime numbers P and Q.
 
-> All symmetric algorithms must accept the "-b" option for block mode. In block mode, only one block will be treated. A block is of the same size as the key. The message must be of the same length as the key.
+> [!INFO] All symmetric algorithms must accept the "-b" option for block mode. In block mode, only one block will be treated. A block is of the same size as the key. The message must be of the same length as the key.
 
 Without the "-b" modifier, your algorithm must work in stream mode, meaning the message to cipher/decipher can be of any length.
 
