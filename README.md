@@ -23,6 +23,14 @@ To compile, you need to install `boost` library:
 ∼/Cryptography> choco install boost
 ```
 
+Then, follow the command line syntax and options described below:
+
+Terminal Command:
+
+```bash
+∼/Cryptography> make
+```
+
 To use mypgp, follow the command line syntax and options described below:
 
 Terminal Command:
