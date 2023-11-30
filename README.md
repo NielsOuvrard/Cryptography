@@ -14,13 +14,13 @@ To compile, you need to install `boost` library:
 
 ```bash
 # Ubuntu
-∼/B-CNA-500> sudo apt-get install libboost-all-dev
+∼/Cryptography> sudo apt-get install libboost-all-dev
 
 # Mac OS
-∼/B-CNA-500> brew install boost
+∼/Cryptography> brew install boost
 
 # Windows
-∼/B-CNA-500> choco install boost
+∼/Cryptography> choco install boost
 ```
 
 To use mypgp, follow the command line syntax and options described below:
@@ -28,7 +28,7 @@ To use mypgp, follow the command line syntax and options described below:
 Terminal Command:
 
 ```bash
-∼/B-CNA-500> ./mypgp -h
+∼/Cryptography> ./mypgp -h
 ```
 
 ## DESCRIPTION
@@ -87,7 +87,7 @@ To run the unit tests, follow the command line syntax and options described belo
 Terminal Command:
 
 ```bash
-∼/B-CNA-500> make test
+∼/Cryptography> make test
 ```
 
 the output should be:
